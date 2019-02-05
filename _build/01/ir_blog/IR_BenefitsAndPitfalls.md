@@ -103,7 +103,7 @@ end
 ```
 
 
-{:.output .output_stream .hidecode}
+{:.output .output_stream}
 ```
 warning: function /home/jovyan/work/t1_book/qMRLab/src/Common/pulse/sinc.m shadows a core library function
 warning: called from

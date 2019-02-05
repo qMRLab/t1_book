@@ -62,34 +62,11 @@ var addHideButton = function () {
   });
 }
 
-var addHideButtonOutput = function () {
-  // If a hide button is already added, don't add another
-  if (document.querySelector('div.hidecode output') !== null) {
-      return;
-  }
-
-  // Find the input cells and add a hide button
-  document.querySelectorAll('div.output div.highlight').forEach(function (item, index) {
-    if (!item.parentElement.classList.contains("hidecode")) {
-        // Skip the cell if it doesn't have a hidecode class
-        return;
-    }
-
-    const id = codeCellId(index)
-    item.setAttribute('id', id);
-    item.insertAdjacentHTML('afterend', hideCodeButton(id))
-
-    // Set up the visibility toggle
-    hideLink = document.querySelector(`#${id} + output + label`);
-    hideLink.addEventListener('click', toggleCodeCellVisibility)
-  });
-}
 
 // Initialize the hide buttos
 var initHiddenCells = function () {
     // Add hide buttons to the cells
     addHideButton();
-    addHideButtonOutput();
 
     // Toggle the code cells that should be hidden
     document.querySelectorAll('div.hidecode input').forEach(function (item) {
