@@ -8,8 +8,8 @@ prev_page:
   url: /01/ir_blog/InversionRecovery
   title: 'Inversion Recovery'
 next_page:
-  url: 
-  title: ''
+  url: /01/References
+  title: 'References'
 comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
 ---
 
