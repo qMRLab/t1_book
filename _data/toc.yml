@@ -17,8 +17,8 @@
 - title: Home
   url: /intro
   not_numbered: true
-# - title: Search
-#   search: true
+- title: Search
+  search: true
 
 - title: Inversion Recovery
   url: /01/ir_blog/IR_Introduction
