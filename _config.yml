@@ -52,7 +52,7 @@ search_max_words_in_content : 100  # In the search function, use at most this ma
 use_jupyterlab                   : true  # If 'true', interact links will use JupyterLab as the interface
 
 # Jupyterhub link settings
-use_jupyterhub_button            : true  # If 'true', display a button that will direct users to a JupyterHub (that you provide)
+use_jupyterhub_button            : false  # If 'true', display a button that will direct users to a JupyterHub (that you provide)
 jupyterhub_url                   : "https://conp-binder.calculquebec.cloud/"  # The URL for your JupyterHub. If no URL, use ""
 jupyterhub_interact_text         : "Launch JupyterHub"  # The text that interact buttons will contain.
 
