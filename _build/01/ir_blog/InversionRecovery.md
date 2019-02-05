@@ -4,8 +4,8 @@ redirect_from:
 interact_link: content/01/ir_blog/InversionRecovery.ipynb
 title: 'Inversion Recovery'
 prev_page:
-  url: /01/ir_blog/IR_Introduction
-  title: 'Inversion Recovery'
+  url: /01/ir_blog/IR_SignalModelling
+  title: 'Signal Modelling'
 next_page:
   url: /01/vfa_blog/VariableFlipAngle
   title: 'Variable Flip Angle'

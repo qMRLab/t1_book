@@ -7,8 +7,8 @@ prev_page:
   url: /intro
   title: 'Home'
 next_page:
-  url: /01/ir_blog/InversionRecovery
-  title: 'Inversion Recovery'
+  url: /01/ir_blog/IR_SignalModelling
+  title: 'Signal Modelling'
 comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
 ---
 
