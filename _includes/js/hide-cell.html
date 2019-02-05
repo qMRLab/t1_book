@@ -46,7 +46,7 @@ var addHideButton = function () {
   }
 
   // Find the input cells and add a hide button
-  document.querySelectorAll('div.input_area div.highlight').forEach(function (item, index) {
+  document.querySelectorAll('div.input_area div.highlight div.output').forEach(function (item, index) {
     if (!item.parentElement.classList.contains("hidecode")) {
         // Skip the cell if it doesn't have a hidecode class
         return;
