@@ -15,5 +15,5 @@ comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /con
 
 ## References
 
-{% bibliography %}
+
 
