@@ -19,11 +19,9 @@ comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /con
 The conventional inversion recovery experiment is considered the gold standard T<sub>1</sub> mapping technique for several reasons. A typical protocol has a long TR value and a sufficient number of inversion times for stable fitting (typically 5 or more) covering the range [0, TR]. It offers a wide dynamic range of signals (up to [-<i>k</i>M<sub>0</sub>, <i>k</i>M<sub>0</sub>]), allowing a number of inversion times where high SNR is available to sample the signal recovery curve (Fukushima 1981). T<sub>1</sub> maps produced by inversion recovery are largely insensitive to inaccuracies in excitation flip angles and imperfect spoiling (Stikov et al. 2015), as all parameters except TI are constant for each measurement and only a single acquisition is performed (at TI) during each TR. One important pulse sequence design consideration is to avoid acquiring at inversion times where the signal for T<sub>1</sub> values of the tissue-of-interest is nulled, as the magnitude images at this TI time will be dominated by Rician noise which can negatively impact the fit under low SNR circumstances (Figure 6). Inversion recovery can also often be acquired using commonly available standard pulse sequences available on most MRI scanners by setting up a customized acquisition protocol, and does not require any additional calibration measurements.
 </p>
 
-### Figure 6
-
 <p style="text-align:justify;">
 <b>
-Monte Carlo simulations (mean and standard deviation (STD), blue markers) and fitted T<sub>1</sub> values (mean and STD, red and green respectively) generated for a T<sub>1</sub> value of 900 ms and 5 TI values linearly spaced across the TR (ranging from 1 to 5 s). A bump in T<sub>1</sub> STD occurs near TR = 3000 ms, which coincides with the TR where the second TI is located near a null point for this T<sub>1</sub> value. 
+Figure 6. Monte Carlo simulations (mean and standard deviation (STD), blue markers) and fitted T<sub>1</sub> values (mean and STD, red and green respectively) generated for a T<sub>1</sub> value of 900 ms and 5 TI values linearly spaced across the TR (ranging from 1 to 5 s). A bump in T<sub>1</sub> STD occurs near TR = 3000 ms, which coincides with the TR where the second TI is located near a null point for this T<sub>1</sub> value. 
 </b>
 </p>
 
