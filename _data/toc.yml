@@ -21,6 +21,9 @@
 #   search: true
 
 - title: Inversion Recovery
+  url: /01/ir_blog/IR_Introduction
+
+- title: Inversion Recovery
   url: /01/ir_blog/InversionRecovery
 
 - title: Variable Flip Angle

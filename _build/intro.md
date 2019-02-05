@@ -4,7 +4,7 @@ prev_page:
   url: 
   title: ''
 next_page:
-  url: /01/ir_blog/InversionRecovery
+  url: /01/ir_blog/IR_Introduction
   title: 'Inversion Recovery'
 comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
 ---
