@@ -8,8 +8,8 @@ prev_page:
   url: /01/ir_blog/IR_OtherMethods
   title: 'Other Saturation-Recovery T<sub>1</sub> Mapping techniques'
 next_page:
-  url: 
-  title: ''
+  url: /01/vfa_blog/VFA_Introduction
+  title: 'Variable Flip Angle'
 comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
 ---
 
