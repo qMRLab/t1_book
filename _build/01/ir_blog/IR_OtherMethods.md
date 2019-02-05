@@ -8,8 +8,13 @@ prev_page:
   url: /01/ir_blog/IR_BenefitsAndPitfalls
   title: 'Benefits and Pitfalls'
 next_page:
+<<<<<<< HEAD
   url: /01/ir_blog/IR_References
   title: 'Other Saturation-Recovery T<sub>1</sub> Mapping techniques'
+=======
+  url: /01/ir_blog/InversionRecovery
+  title: 'Inversion Recovery'
+>>>>>>> 4048a1c40dfbaad82218e710ac2062a6d071d2d5
 comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
 ---
 
