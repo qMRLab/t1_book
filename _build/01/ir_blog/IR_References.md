@@ -3,7 +3,7 @@ redirect_from:
   - "/01/ir-blog/ir-references"
 interact_link: content/01/ir_blog/IR_References.ipynb
 kernel_name: sos
-title: 'Other Saturation-Recovery T<sub>1</sub> Mapping techniques'
+title: 'References'
 prev_page:
   url: /01/ir_blog/IR_OtherMethods
   title: 'Other Saturation-Recovery T<sub>1</sub> Mapping techniques'
