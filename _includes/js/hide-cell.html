@@ -64,7 +64,7 @@ var addHideButton = function () {
 
 var addHideButtonOutput = function () {
   // If a hide button is already added, don't add another
-  if (document.querySelector('div.hidecode input') !== null) {
+  if (document.querySelector('div.hidecode output') !== null) {
       return;
   }
 
@@ -80,7 +80,7 @@ var addHideButtonOutput = function () {
     item.insertAdjacentHTML('afterend', hideCodeButton(id))
 
     // Set up the visibility toggle
-    hideLink = document.querySelector(`#${id} + input + label`);
+    hideLink = document.querySelector(`#${id} + output + label`);
     hideLink.addEventListener('click', toggleCodeCellVisibility)
   });
 }
@@ -89,7 +89,6 @@ var addHideButtonOutput = function () {
 var initHiddenCells = function () {
     // Add hide buttons to the cells
     addHideButton();
-
     addHideButtonOutput();
 
     // Toggle the code cells that should be hidden
