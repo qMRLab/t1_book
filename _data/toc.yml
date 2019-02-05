@@ -37,13 +37,6 @@
   - title: Other Saturation-Recovery T<sub>1</sub> Mapping techniques
     url: /01/ir_blog/IR_OtherMethods
     not_numbered: true
-
-- title: Inversion Recovery
-  url: /01/ir_blog/InversionRecovery
-
-- title: Variable Flip Angle
-  url: /01/vfa_blog/VariableFlipAngle
-  
-- title: References
-  url: /01/References
-  
+  - title: Other Saturation-Recovery T<sub>1</sub> Mapping techniques
+    url: /01/ir_blog/IR_References
+    not_numbered: true
