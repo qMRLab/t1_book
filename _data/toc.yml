@@ -31,6 +31,12 @@
   - title: Data Fitting
     url: /01/ir_blog/IR_DataFitting
     not_numbered: true
+  - title: Benefits and Pitfalls
+    url: /01/ir_blog/IR_BenefitsAndPitfalls
+    not_numbered: true
+  - title: Other Saturation-Recovery T<sub>1</sub> Mapping techniques
+    url: /01/ir_blog/IR_OtherMethods
+    not_numbered: true
 
 - title: Inversion Recovery
   url: /01/ir_blog/InversionRecovery
