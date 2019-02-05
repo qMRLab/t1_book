@@ -101,7 +101,7 @@ venv.bak/
 .mypy_cache/
 
 # Jekyll
-_site/
+#_site/
 .sass-cache
 
 # Test builds
