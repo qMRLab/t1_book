@@ -63,7 +63,7 @@ RUN cd $HOME/work;\
                 nbconvert==5.4.0 \
                 jupyterlab>=0.35.4; \
     python -m sos_notebook.install;\
-    git clone --single-branch -b gh-pages https://github.com/qMRLab/t1_book.git;           \
+    git clone --single-branch -b gh-pages https://github.com/qMRLab/t1_book.git;            \
     cd t1_book;\
     git clone https://github.com/neuropoly/qMRLab.git; \
     cd qMRLab; \
