@@ -30,7 +30,7 @@ Monte Carlo simulations (mean and standard deviation (STD), blue markers) and fi
 
 
 {:.input_area .hidecode}
-```sos
+```matlab
 %use octave
 
 % Verbosity level 0 overrides the disp function and supresses warnings.
@@ -122,7 +122,7 @@ end
 
 
 {:.input_area .hidecode}
-```sos
+```python
 %use sos
 %get TR_range --from Octave
 %get TI_lowres --from Octave
