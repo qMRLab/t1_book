@@ -28,6 +28,9 @@
   - title: Signal Modelling
     url: /01/ir_blog/IR_SignalModelling
     not_numbered: true
+  - title: Data Fitting
+    url: /01/ir_blog/IR_DataFitting
+    not_numbered: true
 
 - title: Inversion Recovery
   url: /01/ir_blog/InversionRecovery
