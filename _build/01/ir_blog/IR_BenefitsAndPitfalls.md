@@ -2,6 +2,7 @@
 redirect_from:
   - "/01/ir-blog/ir-benefitsandpitfalls"
 interact_link: content/01/ir_blog/IR_BenefitsAndPitfalls.ipynb
+kernel_name: sos
 title: 'Benefits and Pitfalls'
 prev_page:
   url: /01/ir_blog/IR_DataFitting
@@ -28,7 +29,7 @@ Figure 6. Monte Carlo simulations (mean and standard deviation (STD), blue marke
 
 
 
-{:.input_area}
+{:.input_area .hidecode}
 ```matlab
 %use octave
 
@@ -120,7 +121,7 @@ loading image
 
 
 
-{:.input_area}
+{:.input_area .hidecode}
 ```python
 %use sos
 %get TR_range --from Octave

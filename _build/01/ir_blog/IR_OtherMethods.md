@@ -2,6 +2,7 @@
 redirect_from:
   - "/01/ir-blog/ir-othermethods"
 interact_link: content/01/ir_blog/IR_OtherMethods.ipynb
+kernel_name: sos
 title: 'Other Saturation-Recovery T<sub>1</sub> Mapping techniques'
 prev_page:
   url: /01/ir_blog/IR_BenefitsAndPitfalls

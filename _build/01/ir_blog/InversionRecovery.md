@@ -2,6 +2,7 @@
 redirect_from:
   - "/01/ir-blog/inversionrecovery"
 interact_link: content/01/ir_blog/InversionRecovery.ipynb
+kernel_name: sos
 title: 'Inversion Recovery'
 prev_page:
   url: /01/ir_blog/IR_OtherMethods

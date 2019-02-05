@@ -2,6 +2,7 @@
 redirect_from:
   - "/01/vfa-blog/variableflipangle"
 interact_link: content/01/vfa_blog/VariableFlipAngle.ipynb
+kernel_name: sos
 title: 'Variable Flip Angle'
 prev_page:
   url: /01/ir_blog/InversionRecovery
