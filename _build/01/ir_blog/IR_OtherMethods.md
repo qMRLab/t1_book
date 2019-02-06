@@ -8,8 +8,8 @@ prev_page:
   url: /01/ir_blog/IR_BenefitsAndPitfalls
   title: 'Benefits and Pitfalls'
 next_page:
-  url: /01/ir_blog/InversionRecovery
-  title: 'Inversion Recovery'
+  url: /01/ir_blog/IR_References
+  title: 'References'
 comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
 ---
 
