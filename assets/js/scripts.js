@@ -104,6 +104,8 @@ initFunction(focusPage);
 /**
  * [4] Use left and right arrow keys to navigate forward and backwards.
  */
+
+/*
 const LEFT_ARROW_KEYCODE = 37
 const RIGHT_ARROW_KEYCODE = 39
 
@@ -118,6 +120,7 @@ document.addEventListener('keydown', event => {
     Turbolinks.visit(getNextUrl())
   }
 })
+*/
 
 /**
  * [5] Right sidebar scroll highlighting
