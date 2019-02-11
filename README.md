@@ -1,6 +1,6 @@
-# Quantitative T1 Mapping
+# Quantitative T<sub>1</sub> MRI
 
-This is an introductory tutorial to quantitative T_1 mapping, powered by [qMRLab](http://www.qmrlab.org).
+This is an introductory tutorial to quantitative T<sub>1</sub> mapping, powered by [qMRLab](http://www.qmrlab.org).
 
 It is rendered here using [Jupyter Book](https://github.com/jupyter/jupyter-book).
 
