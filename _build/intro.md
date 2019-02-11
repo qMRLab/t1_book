@@ -20,4 +20,3 @@ Jupyter Lab notebooks of these tutorials are also available through MyBinder, an
 ## Acknowledgements
 
 This work was supported by the <a href="http://conp.ca" target="_blank">Canadian Open Neuroscience Platform (CONP)</a> initiative, the <a href="https://www.rbiq-qbin.qc.ca/" target="_blank">Quebec Bio-Imaging Network (QBIN)</a>, and the <a href="https://www.icm-mhi.org/en/foundation" target="_blank">Montreal Heart Institute Foundation</a>.
-
