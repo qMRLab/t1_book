@@ -56,12 +56,12 @@ use_jupyterlab                   : true  # If 'true', interact links will use Ju
 
 # Jupyterhub link settings
 use_jupyterhub_button            : false  # If 'true', display a button that will direct users to a JupyterHub (that you provide)
-jupyterhub_url                   : "https://conp-binder.calculquebec.cloud/"  # The URL for your JupyterHub. If no URL, use ""
+jupyterhub_url                   : ""  # The URL for your JupyterHub. If no URL, use ""
 jupyterhub_interact_text         : "Launch JupyterHub"  # The text that interact buttons will contain.
 
 # Binder link settings
 use_binder_button                : true  # If 'true', add a binder button for interactive links
-binderhub_url                    : "https://mybinder.org"  # The URL for your BinderHub. If no URL, use ""
+binderhub_url                    : "hhttps://conp-binder.calculquebec.cloud"  # The URL for your BinderHub. If no URL, use ""
 binder_repo_base                 : "https://github.com/"  # The site on which the textbook repository is hosted
 binder_repo_org                  : "mathieuboudreau"  # The username or organization that owns this repository
 binder_repo_name                 : "t1_book"  # The name of the repository on the web
