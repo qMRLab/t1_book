@@ -64,13 +64,14 @@ RUN cd $HOME/work;\
                 jupyterlab>=0.35.4; \
                 repo2data; \
     python -m sos_notebook.install;\
-    git clone --single-branch -b master https://github.com/mathieuboudreau/t1_book.git;                       \
+    git clone --single-branch -b master https://github.com/mathieuboudreau/t1_book.git;                        \
     cd t1_book;\
     git clone https://github.com/neuropoly/qMRLab.git; \
     cd qMRLab; \
     git checkout 0e97155a6e310911e575ebd8f8870e5f2988a82b; \
     cd ..; \
     mkdir qMRLab/data; \
+    pip show repo2data; \
     for i in _requirements/*_dataset.json; do repo2data -r "$i"; done; \
     chmod -R 777 $HOME/work/t1_book; \
     octave --eval "cd qMRLab; \
