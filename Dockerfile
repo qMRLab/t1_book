@@ -62,6 +62,7 @@ RUN cd $HOME/work;\
                 ipywidgets \
                 nbconvert==5.4.0 \
                 jupyterlab>=0.35.4; \
+                repo2data; \
     python -m sos_notebook.install;\
     git clone --single-branch -b master https://github.com/mathieuboudreau/t1_book.git;                       \
     cd t1_book;\
@@ -69,6 +70,8 @@ RUN cd $HOME/work;\
     cd qMRLab; \
     git checkout 0e97155a6e310911e575ebd8f8870e5f2988a82b; \
     cd ..; \
+    mkdir qMRLab/data; \
+    for i in _requirements/*_dataset.json; do repo2data -r "$i"; done; \
     chmod -R 777 $HOME/work/t1_book; \
     octave --eval "cd qMRLab; \
                       startup; \
