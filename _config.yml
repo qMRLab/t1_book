@@ -23,7 +23,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   This is a tutorial of several broad categories of quantitative T1 mapping techniques.
 
 baseurl: "/t1_book" # the subpath of your site, e.g. /blog. If there is no subpath for your site, use an empty string ""
-url: "http://mathieuboudreau.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "http://qMRLab.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 
 #######################################################################################
@@ -63,7 +63,7 @@ jupyterhub_interact_text         : "Launch JupyterHub"  # The text that interact
 use_binder_button                : true  # If 'true', add a binder button for interactive links
 binderhub_url                    : "https://mybinder.org"  # The URL for your BinderHub. If no URL, use ""
 binder_repo_base                 : "https://github.com/"  # The site on which the textbook repository is hosted
-binder_repo_org                  : "mathieuboudreau"  # The username or organization that owns this repository
+binder_repo_org                  : "qMRLab"  # The username or organization that owns this repository
 binder_repo_name                 : "t1_book"  # The name of the repository on the web
 binder_repo_branch               : "master"  # The branch on which your textbook is hosted.
 binderhub_interact_text          : "Launch Binder"  # The text that interact buttons will contain.
