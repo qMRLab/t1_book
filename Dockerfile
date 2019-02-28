@@ -41,6 +41,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN cd $HOME/work;\
+    pip install --upgrade pip; \
     pip install octave_kernel \
                 sos==0.17.7 \
                 sos-notebook==0.17.2 \
@@ -72,6 +73,7 @@ RUN cd $HOME/work;\
     cd ..; \
     mkdir qMRLab/data; \
     pip show repo2data; \
+    pip install repo2data; \
     for i in _requirements/*_dataset.json; do repo2data -r "$i"; done; \
     chmod -R 777 $HOME/work/t1_book; \
     octave --eval "cd qMRLab; \
