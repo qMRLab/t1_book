@@ -23,7 +23,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   This is a tutorial of several broad categories of quantitative T1 mapping techniques.
 
 baseurl: "/t1_book" # the subpath of your site, e.g. /blog. If there is no subpath for your site, use an empty string ""
-url: "http://qmrlab.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "http://qMRLab.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 
 #######################################################################################
@@ -56,7 +56,7 @@ use_jupyterlab                   : true  # If 'true', interact links will use Ju
 
 # Jupyterhub link settings
 use_jupyterhub_button            : false  # If 'true', display a button that will direct users to a JupyterHub (that you provide)
-jupyterhub_url                   : "https://conp-binder.calculquebec.cloud/"  # The URL for your JupyterHub. If no URL, use ""
+jupyterhub_url                   : ""  # The URL for your JupyterHub. If no URL, use ""
 jupyterhub_interact_text         : "Launch JupyterHub"  # The text that interact buttons will contain.
 
 # Binder link settings

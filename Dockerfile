@@ -41,6 +41,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN cd $HOME/work;\
+    pip install --upgrade pip; \
     pip install octave_kernel \
                 sos==0.17.7 \
                 sos-notebook==0.17.2 \
@@ -61,14 +62,17 @@ RUN cd $HOME/work;\
                 flask \
                 ipywidgets \
                 nbconvert==5.4.0 \
-                jupyterlab>=0.35.4; \
+                jupyterlab>=0.35.4 \
+                repo2data; \
     python -m sos_notebook.install;\
-    git clone --single-branch -b master https://github.com/qMRLab/t1_book.git;                      \
+    git clone --single-branch -b master https://github.com/qMRLab/t1_book.git;                          \
     cd t1_book;\
     git clone https://github.com/neuropoly/qMRLab.git; \
     cd qMRLab; \
     git checkout 0e97155a6e310911e575ebd8f8870e5f2988a82b; \
     cd ..; \
+    mkdir qMRLab/data; \
+    for i in _requirements/*_dataset.json; do repo2data -r "$i"; done; \
     chmod -R 777 $HOME/work/t1_book; \
     octave --eval "cd qMRLab; \
                       startup; \
