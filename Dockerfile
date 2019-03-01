@@ -65,7 +65,7 @@ RUN cd $HOME/work;\
                 jupyterlab>=0.35.4 \
                 repo2data; \
     python -m sos_notebook.install;\
-    git clone --single-branch -b master https://github.com/qMRLab/t1_book.git;                           \
+    git clone  -b notebook_revisions --single-branch https://github.com/qMRLab/t1_book.git;                           \
     cd t1_book;\
     git clone https://github.com/neuropoly/qMRLab.git; \
     cd qMRLab; \
