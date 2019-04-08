@@ -116,7 +116,11 @@ for ii = 1:length(TR_range)
 end
 ```
 
-
+<p style="text-align:right;">
+<font size="2">
+(View simulation code)
+</font>
+</p>
 
 
 {:.input_area .hidecode}
@@ -356,6 +360,11 @@ plot(fig, filename = 'ir_fig_6.html', config = config)
 display(HTML('ir_fig_6.html'))
 ```
 
+<p style="text-align:right;">
+<font size="2">
+(View plot code)
+</font>
+</p>
 
 
 <div markdown="0" class="output output_html">
