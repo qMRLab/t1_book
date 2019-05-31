@@ -86,4 +86,5 @@ USER $NB_UID
 RUN jupyter labextension install @jupyterlab/plotly-extension;  \
     jupyter labextension install @jupyterlab/celltags; \
     jupyter labextension install transient-display-data; \
-    jupyter labextension install --debug jupyterlab-sos@0.4.6
+    jupyter labextension install --debug jupyterlab-sos@0.4.6;\
+    jupyter lab build
