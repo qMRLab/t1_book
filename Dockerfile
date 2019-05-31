@@ -85,4 +85,4 @@ USER $NB_UID
 
 RUN jupyter labextension install @jupyterlab/plotly-extension;  \
     jupyter labextension install @jupyterlab/celltags; \
-    jupyter labextension install jupyterlab-sos 
+    jupyter labextension install jupyterlab-sos@0.4.0
