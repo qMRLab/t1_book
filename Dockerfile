@@ -63,10 +63,10 @@ RUN cd $HOME/work;\
                 flask \
                 ipywidgets \
                 nbconvert==5.4.0 \
-                jupyterlab==1.0.0a3 \
+                jupyterlab>=0.35.4 \
                 repo2data; \
     python -m sos_notebook.install;\
-    git clone --single-branch -b master https://github.com/qMRLab/t1_book.git;                           \
+    git clone --single-branch -b master https://github.com/qMRLab/t1_book.git;                            \
     cd t1_book;\
     git clone https://github.com/neuropoly/qMRLab.git; \
     cd qMRLab; \
@@ -85,6 +85,4 @@ USER $NB_UID
 
 RUN jupyter labextension install @jupyterlab/plotly-extension;  \
     jupyter labextension install @jupyterlab/celltags; \
-    jupyter labextension install transient-display-data; \
-    jupyter labextension install --debug jupyterlab-sos@0.4.6;\
-    jupyter lab build
+    jupyter labextension install jupyterlab-sos 
