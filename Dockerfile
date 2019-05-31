@@ -63,7 +63,7 @@ RUN cd $HOME/work;\
                 flask \
                 ipywidgets \
                 nbconvert==5.4.0 \
-                jupyterlab>=0.35.4 \
+                jupyterlab>=1.0.0-alpha3 \
                 repo2data; \
     python -m sos_notebook.install;\
     git clone --single-branch -b master https://github.com/qMRLab/t1_book.git;                           \
