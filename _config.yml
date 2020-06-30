@@ -61,7 +61,7 @@ jupyterhub_interact_text         : "Launch JupyterHub"  # The text that interact
 
 # Binder link settings
 use_binder_button                : true  # If 'true', add a binder button for interactive links
-binderhub_url                    : "https://mybinder.org"  # The URL for your BinderHub. If no URL, use ""
+binderhub_url                    : "https://binder.conp.cloud"  # The URL for your BinderHub. If no URL, use ""
 binder_repo_base                 : "https://github.com/"  # The site on which the textbook repository is hosted
 binder_repo_org                  : "qMRLab"  # The username or organization that owns this repository
 binder_repo_name                 : "t1_book"  # The name of the repository on the web
