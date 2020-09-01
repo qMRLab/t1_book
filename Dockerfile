@@ -57,7 +57,7 @@ RUN cd $HOME/work;\
                 plotly \
                 dash \
                 dash_core_components \
-                dash_html_components \
+                dash_html_components  \
                 dash_dangerously_set_inner_html \
                 dash-renderer \
                 flask \
