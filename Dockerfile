@@ -42,7 +42,7 @@ RUN apt-get update && \
 
 RUN cd $HOME/work;\
     pip install --upgrade pip; \
-    pip install octave_kernel  \
+    pip install octave_kernel   \
                 sos==0.17.7 \
                 sos-notebook==0.17.2 \
                 sos-python==0.9.12.1 \
