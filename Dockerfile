@@ -41,7 +41,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN cd $HOME/work;\
-    pip install --upgrade pip; \
+    pip install --upgrade pip --ignore-installed certifi; \
     pip install octave_kernel   \
                 sos==0.17.7 \
                 sos-notebook==0.17.2 \
