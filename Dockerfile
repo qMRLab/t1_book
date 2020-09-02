@@ -54,12 +54,7 @@ RUN cd $HOME/work;\
                 sos-javascript==0.9.12.2 \
                 sos-r==0.9.12.2 \
                 scipy \
-                plotly \
-                dash \
-                dash_core_components \
-                dash_html_components  \
-                dash_dangerously_set_inner_html \
-                dash-renderer \
+                plotly==3.10.0 \
                 flask \
                 ipywidgets \
                 nbconvert==5.4.0 \
