@@ -1,7 +1,7 @@
 # Book settings
-title                       : "Quantitative T &#8321; MRI"
-author                      : <a href="https://github.com/Notebook-Factory">Notebook-factory team</a>
-copyright                   : "2021"  
+title                       : "Quantitative T&#8321; MRI"
+author                      : <a href="https://github.com/mathieuboudreau">Mathieu Boudreau</a>
+copyright                   : "2018"  
 logo                        : images/logo.png  
 exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints"]
 
