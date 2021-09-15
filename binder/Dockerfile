@@ -64,8 +64,8 @@ RUN cd $HOME/work;\
                 jupytext\
                 repo2data; \
     python -m sos_notebook.install;\
-    git clone https://github.com/qMRLab/t1_book_update.git; \
-    cd t1_book_update;\
+    git clone https://github.com/qMRLab/t1_book.git; \
+    cd t1_book;\
     git checkout neurolibre; \
     git clone https://github.com/neuropoly/qMRLab.git; \
     cd qMRLab; \
@@ -73,12 +73,12 @@ RUN cd $HOME/work;\
     cd ..; \
     mkdir qMRLab/data; \
     for i in _requirements/*_dataset.json; do repo2data -r "$i"; done; \
-    chmod -R 777 $HOME/work/t1_book_update; \
+    chmod -R 777 $HOME/work/t1_book; \
     octave --eval "cd qMRLab; \
                       startup; \
                       pkg list;"
 
-WORKDIR $HOME/work/t1_book_update
+WORKDIR $HOME/work/t1_book
 
 USER $NB_UID
 
