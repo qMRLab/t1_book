@@ -1,0 +1,335 @@
+## Benefits and Pitfalls
+
+<p style="text-align:justify;">
+The conventional inversion recovery experiment is considered the gold standard T<sub>1</sub> mapping technique for several reasons. A typical protocol has a long TR value and a sufficient number of inversion times for stable fitting (typically 5 or more) covering the range [0, TR]. It offers a wide dynamic range of signals (up to [-<i>k</i>M<sub>0</sub>, <i>k</i>M<sub>0</sub>]), allowing a number of inversion times where high SNR is available to sample the signal recovery curve (Fukushima 1981). T<sub>1</sub> maps produced by inversion recovery are largely insensitive to inaccuracies in excitation flip angles and imperfect spoiling (Stikov et al. 2015), as all parameters except TI are constant for each measurement and only a single acquisition is performed (at TI) during each TR. One important pulse sequence design consideration is to avoid acquiring at inversion times where the signal for T<sub>1</sub> values of the tissue-of-interest is nulled, as the magnitude images at this TI time will be dominated by Rician noise which can negatively impact the fit under low SNR circumstances (Figure 6). Inversion recovery can also often be acquired using commonly available standard pulse sequences available on most MRI scanners by setting up a customized acquisition protocol, and does not require any additional calibration measurements.
+</p>
+
+<p style="text-align:justify;">
+<b>
+Figure 6. Monte Carlo simulations (mean and standard deviation (STD), blue markers) and fitted T<sub>1</sub> values (mean and STD, red and green respectively) generated for a T<sub>1</sub> value of 900 ms and 5 TI values linearly spaced across the TR (ranging from 1 to 5 s). A bump in T<sub>1</sub> STD occurs near TR = 3000 ms, which coincides with the TR where the second TI is located near a null point for this T<sub>1</sub> value. 
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+clear all
+
+%% Setup parameters
+% All times are in seconds
+% All flip angles are in degrees
+
+TR_range = 1000:100:5000; % in seconds
+
+x = struct;
+x.T1 = 900; % in seconds
+
+Opt.SNR = 25;
+Opt.M0 = 1;
+Opt.FAexcite = 90; % Excitation flip angle
+Opt.FAinv = 180;   % Inversion flip angle
+
+%% Monte Carlo data simulation
+% Simulate noisy signal data 1,000 time, fit the data, then calculate the means and standard deviations of the data and fitted T1
+% Data is calculated by calculating the a and b values of Eq. 4 from the full analytical equations (Eq. 1)
+
+Model = inversion_recovery; 
+
+for ii = 1:length(TR_range)
+    Opt.TR = TR_range(ii);
+    Opt.T1 = x.T1;
+    TI_lowres(ii,:) = linspace(0.05, Opt.TR, 6)';
+    Model.Prot.IRData.Mat = [TI_lowres(ii,:)];
+    [ra,rb] = Model.ComputeRaRb(x,Opt);
+    x.rb = rb;
+    x.ra = ra;
+    for jj = 1:1000
+        [FitResult{ii,jj}, noisyData{ii,jj}] = Model.Sim_Single_Voxel_Curve(x,Opt,0); 
+        fittedT1(ii,jj) = FitResult{ii,jj}.T1;
+        noisyData_array(ii,jj,:) = noisyData{ii,jj}.IRData;
+    end
+        
+    for kk=1:length(TI_lowres(ii,:))
+        data_mean(ii,kk) = mean(noisyData_array(ii,:,kk));
+        data_std(ii,kk) = std(noisyData_array(ii,:,kk));
+    end
+    
+    T1_mean(ii) = mean(fittedT1(ii,:));
+    T1_std(ii) = std(fittedT1(ii,:));
+end
+
+%% Calculate the noiseless data at a higher TI resolution to plot the ideal signal curve.
+%
+
+for ii = 1:length(TR_range)
+    TI_highres(ii,:) = linspace(0.05, TR_range(ii), 500);
+    Model.Prot.IRData.Mat = [TI_highres(ii,:)];
+    Opt.TR = TR_range(ii);
+    Opt.T1 = x.T1;
+    [ra,rb] = Model.ComputeRaRb(x,Opt);
+    x.rb = rb;
+    x.ra = ra;
+
+    data_noiseless(ii,:) = Model.equation(x);
+end
+
+%use sos
+%get TR_range --from Octave
+%get TI_lowres --from Octave
+%get TI_highres --from Octave
+%get T1_mean --from Octave
+%get T1_std --from Octave
+%get data_mean --from Octave
+%get data_std --from Octave
+%get data_noiseless --from Octave
+
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+data1 = [dict(
+        visible = False,
+        x = np.squeeze(np.asarray(TI_lowres[ii,:])),
+        y = np.squeeze(np.asarray(data_mean[ii,:])),
+        error_y=dict(
+            type='data',
+            color = ('rgb(22, 96, 167)'),
+            array=np.squeeze(np.asarray(data_std[ii,:])),
+            visible=True
+        ),
+        line = dict(
+            color = ('rgb(22, 96, 167)'),
+            dash = 'dot'),
+        mode = 'markers',
+        name = 'Monte Carlo simulated signal',
+        text = 'Monte Carlo simulated signal',
+        hoverinfo = 'x+y+text') for ii in range(len(TR_range))]
+
+data1[28]['visible'] = True
+
+data2 = [dict(
+        visible = False,
+        x = np.squeeze(np.asarray(TI_highres[ii,:])),
+        y = np.squeeze(np.asarray(data_noiseless[ii,:])),
+        line = dict(
+            color = ('rgb(247, 152, 19)'),
+            ),
+        name = 'Noiseless signal',
+        text = 'Noiseless signal',
+        hoverinfo = 'x+y+text') for ii in range(len(TR_range))]
+
+data2[28]['visible'] = True
+
+data_meanT1 = [dict(
+    visible = False,
+    x = TR_range,
+    y = T1_mean,
+    name = 'Mean T<sub>1</sub> (s)',
+    text = 'Mean T<sub>1</sub> (s)',
+    hoverinfo = 'x+y+text',
+    xaxis='x2',
+    yaxis='y2') for ii in range(len(TR_range))]
+
+data_meanT1[15]['visible'] = True
+
+data_stdT1 = [dict(
+    visible = False,
+    x = TR_range,
+    y = T1_std,
+    name = 'STD T<sub>1</sub> (s)',
+    text = 'STD T<sub>1</sub> (s)',
+    hoverinfo = 'x+y+text',
+    xaxis='x2',
+    yaxis='y3') for ii in range(len(TR_range))]
+
+data_stdT1[28]['visible'] = True
+
+data = data2 + data1 + data_meanT1 + data_stdT1
+
+steps = []
+for i in range(len(TR_range)):
+    step = dict(
+        method = 'restyle',  
+        args = ['visible', [False] * len(data1)],
+        label = str(TR_range[i])
+    )
+    step['args'][1][i] = True # Toggle i'th trace to "visible"
+    steps.append(step)
+
+sliders = [dict(
+    x = 0,
+    y = -0.02,
+    active = 28,
+    currentvalue = {"prefix": "TR value (ms): <b>"},
+    pad = {"t": 50, "b": 10},
+    steps = steps
+)]
+
+layout = go.Layout(
+    width=540,
+    height=540,
+    margin = dict(
+                t=0,
+                r=25,
+                b=100,
+                l=75),
+    annotations=[
+        dict(
+            x=0.5004254919715793,
+            y=-0.17,
+            showarrow=False,
+            text='Inversion Time – TI (ms)',
+            font=dict(
+                family='Times New Roman',
+                size=26
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=-0.15,
+            y=0.5,
+            showarrow=False,
+            text='Signal (magnitude)',
+            font=dict(
+                family='Times New Roman',
+                size=26
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=0.76,
+            y=0.77,
+            showarrow=False,
+            text='<b>TR (ms)<b>',
+            font=dict(
+                family='Times New Roman',
+                size=14
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=0.40,
+            y=0.35,
+            showarrow=False,
+            text='<b>Mean T<sub>1</sub> (ms)<b>',
+            font=dict(
+                family='Times New Roman',
+                size=14
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=1.00,
+            y=0.35,
+            showarrow=False,
+            text='<b>STD T<sub>1</sub> (ms)<b>',
+            font=dict(
+                family='Times New Roman',
+                size=14
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        )
+    ],
+    xaxis=dict(
+        autorange=False,
+        range=[0, 5000],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    yaxis=dict(
+        autorange=False,
+        range=[0, 1],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    xaxis2=dict(
+        domain=[0.5, 0.90],
+        anchor='y2',
+        mirror = True,
+        side='top',
+        ticks='inside',
+        showline=True,
+    ),
+    yaxis2=dict(
+        autorange=False,
+        range=[500, 1300],
+        domain=[0.05, 0.65],
+        anchor='x2',
+        mirror = True,
+        ticks='inside',
+        showline=True,
+    ),
+    yaxis3=dict(
+        autorange=False,
+        range=[0, 190],
+        domain=[0.05, 0.65],
+        anchor='x2',
+        overlaying='y2',
+        side='right',
+        ticks='inside',
+    ),
+    legend=dict(
+        x=0.3,
+        y=1.35,
+        traceorder='normal',
+        font=dict(
+            family='Times New Roman',
+            size=12,
+            color='#000'
+        ),
+        bordercolor='#000000',
+        borderwidth=2
+    ), 
+    sliders=sliders
+)
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'ir_fig_6.html', config = config)
+display(HTML('ir_fig_6.html'))
+
+<p style="text-align:justify;">
+Despite a widely acknowledged robustness for measuring accurate T<sub>1</sub> maps, inversion recovery is not often used in studies. An important drawback of this technique is the need for long TR values, generally on the order of a few T<sub>1</sub> for general models (e.g. Eqs. 1 and 4), and up to 5T<sub>1</sub> for long TR approximated models (Eq. 3). It takes about to 10-25 minutes to acquire a single-slice T<sub>1</sub> map using the inversion recovery technique, as only one TI is acquired per TR  (2-5 s) and conventional cartesian gradient readout imaging acquires one phase encode line per excitation (for a total of ~100-200 phase encode lines). The long acquisition time makes it challenging to acquire whole-organ T<sub>1</sub> maps in clinically feasible protocol times. Nonetheless, it is useful as a reference measurement for comparisons against other T<sub>1</sub> mapping methods, or to acquire a single-slice T<sub>1</sub> map of a tissue to get T<sub>1</sub> estimates for optimization of other pulse sequences.
+</p>

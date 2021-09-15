@@ -1,0 +1,836 @@
+## Data Fitting
+
+<p style="text-align:justify;">
+At first glance, one could be tempted to fit VFA data using a non-linear least squares fitting algorithm such as Levenberg-Marquardt with Eq. 1, which typically only has two free fitting variables (T<sub>1</sub> and <i>M</i><sub>0</sub>). Although this is a valid way of estimating T<sub>1</sub> from VFA data, it is rarely done in practice because a simple refactoring of Equation 1 allows T<sub>1</sub> values to be estimated with a linear least square fitting algorithm, which substantially reduces the processing time. Without any approximations, Equation 1 can be rearranged into the form <b>y</b> = m<b>x</b>+b (Gupta 1977):
+</p>
+
+\begin{equation*}\tag{3}
+\frac{S_n}{sin\theta_n} = e^{- \frac{TR}{T_1}} \frac{S_n}{tan\theta_n} + C (1-e^{- \frac{TR}{T_1}})
+\end{equation*}
+
+
+<p style="text-align:justify;">
+As the third term does not change between measurements (it is constant for each <i>θ<sub>n</sub></i>), it can be grouped into the constant for a simpler representation:
+</p>
+
+\begin{equation*}\tag{4}
+\frac{S_n}{sin\theta_n} = e^{- \frac{TR}{T_1}} \frac{S_n}{tan\theta_n} + C
+\end{equation*}
+
+<p style="text-align:justify;">
+With this rearranged form of Equation 1, T<sub>1</sub> can be simply estimated from the slope of a linear regression calculated from <i>S<sub>n</sub></i>/sin(<i>θ<sub>n</sub></i>) and <i>S<sub>n</sub></i>/tan(<i>θ<sub>n</sub></i>) values:
+</p>
+
+
+\begin{equation*}\tag{5}
+T_1 = - \frac{TR}{ln(slope)}
+\end{equation*}
+
+<p style="text-align:justify;">
+If data were acquired using only two flip angles – a very common VFA acquisition protocol – then the slope can be calculated using the elementary slope equation. Figure 5 displays both Equation 1 and 4 plotted for a noisy dataset.
+</p>
+
+<p style="text-align:justify;">
+<b>
+Figure 5. Mean and standard deviation of the VFA signal plotted using the nonlinear form (Equation 1 – blue) and linear form (Equation 4 – red). Monte Carlo simulation details: SNR = 25, N = 1000. VFA simulation details: TR = 25 ms, T<sub>1</sub> = 900 ms.
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+clear all
+
+%% Setup parameters
+% All times are in milliseconds
+% All flip angles are in degrees
+
+params.EXC_FA = [1:4,5:5:90];
+
+%% Calculate signals
+%
+% To see all the options available, run `help vfa_t1.analytical_solution`
+
+params.TR = 0.025;
+params.EXC_FA = [2:9,10:5:90];
+
+% White matter
+x.M0 = 1;
+x.T1 = 0.900; % in milliseconds
+
+Model = vfa_t1; 
+
+Opt.SNR = 25;
+Opt.TR = params.TR;
+Opt.T1 = x.T1;
+
+clear Model.Prot.VFAData.Mat(:,1) 
+Model.Prot.VFAData.Mat = zeros(length(params.EXC_FA),2);
+Model.Prot.VFAData.Mat(:,1) = params.EXC_FA';
+Model.Prot.VFAData.Mat(:,2) = Opt.TR;
+
+for jj = 1:1000
+    [FitResult{jj}, noisyData{jj}] = Model.Sim_Single_Voxel_Curve(x,Opt,0); 
+    fittedT1(jj) = FitResult{jj}.T1;
+    noisyData_array(jj,:) = noisyData{jj}.VFAData;
+    noisyData_array_div_sin(jj,:) = noisyData_array(jj,:) ./ sind(Model.Prot.VFAData.Mat(:,1))';
+    noisyData_array_div_tan(jj,:) = noisyData_array(jj,:) ./ tand(Model.Prot.VFAData.Mat(:,1))';
+end
+        
+for kk=1:length(params.EXC_FA)
+    data_mean(kk) = mean(noisyData_array(:,kk));
+    data_std(kk) = std(noisyData_array(:,kk));
+    
+    data_mean_div_sin(kk) = mean(noisyData_array_div_sin(:,kk));
+    data_std_div_sin(kk) = std(noisyData_array_div_sin(:,kk));
+    
+    data_mean_div_tan(kk) = mean(noisyData_array_div_tan(:,kk));
+    data_std_div_tan(kk) = std(noisyData_array_div_tan(:,kk));
+end
+
+
+%% Setup parameters
+% All times are in milliseconds
+% All flip angles are in degrees
+
+params_highres.EXC_FA = [2:1:90];
+
+%% Calculate signals
+%
+% To see all the options available, run `help vfa_t1.analytical_solution`
+
+params_highres.TR = params.TR * 1000; % in milliseconds
+    
+% White matter
+params_highres.T1 = x.T1*1000; % in milliseconds
+
+signal_WM = vfa_t1.analytical_solution(params_highres);
+signal_WM_div_sin = signal_WM ./ sind(params_highres.EXC_FA);
+signal_WM_div_tan = signal_WM ./ tand(params_highres.EXC_FA);
+
+
+%use sos
+%get params --from Octave
+%get data_mean --from Octave
+%get data_mean_div_sin --from Octave
+%get data_mean_div_tan --from Octave
+%get data_std --from Octave
+%get data_std_div_sin --from Octave
+%get data_std_div_tan --from Octave
+%get params_highres --from Octave
+%get signal_WM --from Octave
+%get signal_WM_div_sin --from Octave
+%get signal_WM_div_tan --from Octave
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+data1 = dict(
+        visible = True,
+        x = params_highres["EXC_FA"],
+        y = signal_WM,
+        name = 'Analytical Solutions',
+        text = params["EXC_FA"],
+        mode = 'lines', 
+        line = dict(
+            color = ('rgb(0, 0, 0)'),
+            dash = 'dot'),
+        hoverinfo='none')
+
+data2 = dict(
+        visible = True,
+        x = signal_WM_div_tan,
+        y = signal_WM_div_sin,
+        name = 'Analytical Solutions',
+        text = params_highres["EXC_FA"],
+        mode = 'lines',
+        xaxis='x2',
+        yaxis='y2',
+        line = dict(
+            color = ('rgb(0, 0, 0)'),
+            dash = 'dot'
+            ),
+        hoverinfo='none',
+        showlegend=False)
+
+data3 = dict(
+        visible = True,
+        x = params["EXC_FA"],
+        y = data_mean,
+        name = 'Nonlinear Form - Noisy',
+        text = ["Flip angle: " + str(x) + "°" for x in params["EXC_FA"]],
+        mode = 'markers',
+        hoverinfo = 'y+text',
+        line = dict(
+            color = ('rgb(22, 96, 167)'),
+            ),
+        error_y=dict(
+            type='data',
+            array=data_std,
+            visible=True,
+            color = ('rgb(142, 192, 240)')
+        ))
+
+data4 = dict(
+        visible = True,
+        x = data_mean_div_tan,
+        y = data_mean_div_sin,
+        name = 'Linear Form - Noisy',
+        text = ["Flip angle: " + str(x) + "°" for x in params["EXC_FA"]],
+        mode = 'markers',
+        xaxis='x2',
+        yaxis='y2',
+        hoverinfo = 'x+y+text',
+        line = dict(
+            color = ('rgb(205, 12, 24)'),
+            ),
+        error_x=dict(
+            type='data',
+            array=data_std_div_tan,
+            visible=True,
+            color = ('rgb(248, 135, 142)')
+        ),
+        error_y=dict(
+            type='data',
+            array=data_std_div_sin,
+            visible=True,
+            color = ('rgb(248, 135, 142)')
+        ))
+
+data = [data1, data2, data3, data4]
+
+layout = go.Layout(
+    width=580,
+    height=450,
+    margin=go.layout.Margin(
+        l=80,
+        r=80,
+        b=60,
+        t=60,
+    ),
+    annotations=[
+        dict(
+            x=0.5004254919715793,
+            y=-0.14,
+            showarrow=False,
+            text='Excitation Flip Angle (<i>θ<sub>n</sub></i>)',
+            font=dict(
+                family='Times New Roman',
+                size=22,
+                color=('rgb(21, 91, 158)')
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=-0.17,
+            y=0.5,
+            showarrow=False,
+            text='Signal (<i>S<sub>n</sub></i>)',
+            font=dict(
+                family='Times New Roman',
+                size=22,
+                color=('rgb(21, 91, 158)')
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=0.5004254919715793,
+            y=1.15,
+            showarrow=False,
+            text='<i>S<sub>n</sub></i> / tan(<i>θ<sub>n</sub></i>)',
+            font=dict(
+                family='Times New Roman',
+                size=22,
+                color=('rgb(169, 10, 20)') 
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=1.16,
+            y=0.5,
+            showarrow=False,
+            text='<i>S<sub>n</sub></i> / sin(<i>θ<sub>n</sub></i>)',
+            font=dict(
+                family='Times New Roman',
+                size=22,
+                color=('rgb(169, 10, 20)') 
+            ),
+            xref='paper',
+            yref='paper',
+            textangle=-90,
+        ),
+    ],
+    xaxis=dict(
+        autorange=False,
+        range=[params['EXC_FA'][0], params['EXC_FA'][-1]],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    yaxis=dict(
+        autorange=True,
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    xaxis2=dict(
+        autorange=False,
+        range=[0, 1],
+        showgrid=False,
+        mirror=True,
+        overlaying= 'x',
+        anchor= 'y2',
+        side= 'top',
+        linecolor='black',
+        linewidth=2
+    ),
+    yaxis2=dict(
+        autorange=False,
+        range=[0, 1],
+        showgrid=False,
+        overlaying= 'y',
+        anchor= 'x',
+        side= 'right',
+        linecolor='black',
+        linewidth=2
+    ),
+    legend=dict(
+        x=0.32,
+        y=0.98,
+        traceorder='normal',
+        font=dict(
+            family='Times New Roman',
+            size=12,
+            color='#000'
+        ),
+        bordercolor='#000000',
+        borderwidth=2
+    ), 
+)
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'vfa_fig_5.html', config = config)
+display(HTML('vfa_fig_5.html'))
+
+
+<p style="text-align:justify;">
+There are two important imaging protocol design considerations that should be taken into account when planning to use VFA: (1) how many and which flip angles to use to acquire VFA data, and (2) correcting inaccurate flip angles due to transmit RF field inhomogeneity. Most VFA experiments use the minimum number of required flip angles (two) to minimize acquisition time. For this case, it has been shown that the flip angle choice resulting in the best precision for VFA T<sub>1</sub> estimates for a sample with a single T<sub>1</sub> value (i.e. single tissue) are the two flip angles that result in 71% of the maximum possible steady-state signal (i.e. at the Ernst angle) (Deoni et al. 2003; Schabel & Morrell 2009).
+</p>
+
+<p style="text-align:justify;">
+Time allowing, additional flip angles are often acquired at higher values and in between the two above, because greater signal differences between tissue T<sub>1</sub> values are present there (e.g. Figure 2). Also, for more than two flip angles, Equations 1 and 4 do not have the same noise weighting for each fitting point, which may bias linear least-square T<sub>1</sub> estimates at lower SNRs. Thus, it has been recommended that low SNR data should be fitted with either Equation 1 using non-linear least-squares (slower fitting) or with a weighted linear least-squares form of Equation 4 (Chang et al. 2008).
+</p>
+
+<p style="text-align:justify;">
+Accurate knowledge of the flip angle values is very important to produce accurate T<sub>1</sub> maps. Because of how the RF field interacts with matter (Sled & Pike 1998), the excitation RF field (B<sub>1</sub><sup>+</sup>, or B<sub>1</sub> for short) of a loaded RF coil results in spatial variations in intensity/amplitude, unless RF shimming is available to counteract this effect (not common at clinical field strengths). For quantitative measurements like VFA which are sensitive to this parameter, the flip angle can be corrected (voxelwise) relative to the nominal value by multiplying it with a scaling factor (B<sub>1</sub>) from a B<sub>1</sub> map that is acquired during the same session:
+</p>
+
+
+\begin{equation*}\tag{6}
+\theta_{corrected} = B_1 \theta_{nominal}
+\end{equation*}
+
+
+<p style="text-align:justify;">
+B<sub>1</sub> in this context is normalized, meaning that it is unitless and has a value of 1 in voxels where the RF field has the expected amplitude (i.e. where the nominal flip angle is the actual flip angle). Figure 6 displays fitted VFA T<sub>1</sub> values from a Monte Carlo dataset simulated using biased flip angle values, and fitted without/with B<sub>1</sub> correction.
+</p>
+
+
+<p style="text-align:justify;">
+<b>
+Figure 6. Mean and standard deviations of fitted VFA T<sub>1</sub> values for a set of Monte Carlo simulations (SNR = 100, N = 1000), simulated using a wide range of biased flip angles and fitted without (blue) or with (red) B<sub>1</sub> correction. Simulation parameters: TR = 25 ms, T<sub>1</sub> = 900 ms, <i>θ<sub>nominal</sub></i> = 6° and 32° (optimized values for this TR/T<sub>1</sub> combination). Notice how even after B<sub>1</sub> correction, fitted T<sub>1</sub> values at B<sub>1</sub> values far from the nominal case (B<sub>1</sub> = 1) exhibit larger variance, as the actual flip angles of the simulated signal deviate from the optimal values for this TR/T<sub>1</sub> (Deoni et al. 2003).
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+clear all
+
+%% Setup parameters
+% All times are in seconds
+% All flip angles are in degrees
+
+params.TR = 0.025; % in seconds
+
+% White matter
+params.T1 = 0.900; % in seconds
+
+% Calculate optimal flip angles for a two flip angle VFA experiment (for this T1 and TR)
+% The will be the nominal flip angles (the flip angles assumed by the "user", before a 
+% "realistic"B1 bias is applied)
+
+nominal_EXC_FA = vfa_t1.find_two_optimal_flip_angles(params); % in degrees
+disp('Nominal flip angles:')
+disp(nominal_EXC_FA)
+
+% Range of B1 values biasing the excitation flip angle away from their nominal values
+B1Range = 0.1:0.1:2;
+
+x.M0 = 1;
+x.T1 = params.T1; % in seconds
+
+Model = vfa_t1; 
+
+Opt.SNR = 100;
+Opt.TR = params.TR;
+Opt.T1 = x.T1;
+
+% Monte Carlo signal simulations
+for ii = 1:1000
+    for jj = 1:length(B1Range)
+        B1 = B1Range(jj);
+        actual_EXC_FA = B1 * nominal_EXC_FA;
+ 
+        params.EXC_FA = actual_EXC_FA;
+
+        clear Model.Prot.VFAData.Mat(:,1)
+        Model.Prot.VFAData.Mat = zeros(length(params.EXC_FA),2);
+        Model.Prot.VFAData.Mat(:,1) = params.EXC_FA';
+        Model.Prot.VFAData.Mat(:,2) = Opt.TR;
+
+        [FitResult{ii,jj}, noisyData{ii,jj}] = Model.Sim_Single_Voxel_Curve(x,Opt,0); 
+        noisyData_array(ii,jj,:) = noisyData{ii,jj}.VFAData;
+    end
+end
+%
+Model = vfa_t1; 
+    
+FlipAngle = nominal_EXC_FA';
+TR = params.TR .* ones(size(FlipAngle));
+
+Model.Prot.VFAData.Mat = [FlipAngle TR];
+
+data.VFAData(:,:,1,1) = noisyData_array(:,:,1);
+data.VFAData(:,:,1,2) = noisyData_array(:,:,2);
+data.Mask = repmat(ones(size(B1Range)),[size(noisyData_array,1),1]);
+
+data.B1map = repmat(ones(size(B1Range)),[size(noisyData_array,1),1]);
+FitResults_noB1Correction = FitData(data,Model,0);
+
+data.B1map = repmat(B1Range,[size(noisyData_array,1),1]);
+FitResults_withB1Correction = FitData(data,Model,0);
+
+%%
+%
+
+mean_T1_noB1Correction = mean(FitResults_noB1Correction.T1);
+mean_T1_withB1Correction = mean(FitResults_withB1Correction.T1);
+std_T1_noB1Correction = std(FitResults_noB1Correction.T1);
+std_T1_withB1Correction = std(FitResults_withB1Correction.T1);
+
+
+%use sos
+%get B1Range --from Octave
+%get mean_T1_noB1Correction --from Octave
+%get mean_T1_withB1Correction --from Octave
+%get std_T1_noB1Correction --from Octave
+%get std_T1_withB1Correction --from Octave
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+data1 = dict(
+        visible = True,
+        x = B1Range,
+        y = mean_T1_noB1Correction,
+        name = 'Nominal flip angles',
+        text = 'Nominal flip angles',
+        mode = 'lines+markers',
+        hoverinfo = 'x+y+text',
+        line = dict(
+            color = ('rgb(22, 96, 167)'),
+            ),
+        error_y=dict(
+            type='data',
+            array=std_T1_noB1Correction,
+            visible=True,
+            color = ('rgb(142, 192, 240)')
+        ))
+
+data2 = dict(
+        visible = True,
+        x = B1Range,
+        y = mean_T1_withB1Correction,
+        name = 'B<sub>1</sub>-corrected flip angles',
+        text = 'B<sub>1</sub>-corrected flip angles',
+        mode = 'lines+markers',
+        hoverinfo = 'x+y+text',
+        line = dict(
+            color = ('rgb(205, 12, 24)'),
+            ),
+        error_y=dict(
+            type='data',
+            array=std_T1_withB1Correction,
+            visible=True,
+            color = ('rgb(248, 135, 142)')
+        ))
+
+data = [data1, data2]
+
+layout = go.Layout(
+    width=580,
+    height=450,
+    margin=go.layout.Margin(
+        l=80,
+        r=80,
+        b=60,
+        t=60,
+    ),
+    annotations=[
+        dict(
+            x=0.5004254919715793,
+            y=-0.14,
+            showarrow=False,
+            text='B<sub>1</sub> (n.u.)',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=-0.17,
+            y=0.5,
+            showarrow=False,
+            text='T<sub>1</sub> (s)',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        ),
+    ],
+    xaxis=dict(
+        autorange=False,
+        range=[B1Range[0], B1Range[-1]],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    yaxis=dict(
+        autorange=False,
+        range=[0, max(mean_T1_noB1Correction)],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    legend=dict(
+        x=0.32,
+        y=0.98,
+        traceorder='normal',
+        font=dict(
+            family='Times New Roman',
+            size=12,
+            color='#000'
+        ),
+        bordercolor='#000000',
+        borderwidth=2
+    ), 
+)
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'vfa_fig_6.html', config = config)
+display(HTML('vfa_fig_6.html'))
+
+<p style="text-align:justify;">
+Figure 7 displays an example VFA dataset and a B<sub>1</sub> map in a healthy brain, along with the T<sub>1</sub> map estimated using a linear fit (Equations 4 and 5).
+</p>
+
+<p style="text-align:justify;">
+<b>
+Figure 7. Example variable flip angle dataset and B<sub>1</sub> map of a healthy adult brain (left). The relevant VFA protocol parameters used were: TR = 15 ms, <i>θ<sub>nominal</sub></i> = 3° and 20°. The T<sub>1</sub> map (right) was fitted using a linear regression (Equations 4 and 5).
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+clear all
+
+%% MATLAB/OCTAVE CODE
+
+% Load data into environment, and rotate mask to be aligned with IR data
+load('data/vfa_dataset/VFAData.mat');
+load('data/vfa_dataset/B1map.mat');
+load('data/vfa_dataset/Mask.mat');
+
+% Format qMRLab vfa_t1 model parameters, and load them into the Model object
+Model = vfa_t1; 
+FlipAngle = [    3;     20];
+TR        = [0.015; 0.0150];
+
+Model.Prot.VFAData.Mat = [FlipAngle, TR];
+
+% Format data structure so that they may be fit by the model
+data = struct();
+data.VFAData= double(VFAData);
+data.B1map= double(B1map);
+data.Mask= double(Mask);
+
+FitResults = FitData(data,Model,0); % The '0' flag is so that no wait bar is shown.
+
+T1_map = imrotate(FitResults.T1.*Mask,-90);
+T1_map(T1_map>5)=0;
+T1_map = T1_map*1000; % Convert to ms
+
+xAxis = [0:size(T1_map,2)-1];
+yAxis = [0:size(T1_map,1)-1];
+
+% Raw MRI data at different TI values
+FA_03 = imrotate(squeeze(VFAData(:,:,:,1).*Mask),-90);
+FA_20 = imrotate(squeeze(VFAData(:,:,:,2).*Mask),-90);
+B1map = imrotate(squeeze(B1map.*Mask),-90);
+
+
+%use sos
+%get T1_map --from Octave
+%get FA_03 --from Octave
+%get FA_20 --from Octave
+%get B1map --from Octave
+%get xAxis --from Octave
+%get yAxis --from Octave
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+from plotly import tools
+
+trace1 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=FA_03,
+                   colorscale='Greys',
+                   showscale = False,
+                   visible=False,
+                   name = 'Signal')
+trace2 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=FA_20,
+                   colorscale='Greys',
+                   showscale = False,
+                   visible=True,
+                   name = 'Signal')
+trace3 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=B1map,
+                   zmin=0.7,
+                   zmax=1.3,
+                   colorscale='RdBu',
+                   showscale = False,
+                   visible=False,
+                   name = 'B1 values')
+trace5 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=T1_map,
+                   zmin=0.0,
+                   zmax=5000,
+                   colorscale='Portland',
+                   xaxis='x2',
+                   yaxis='y2',
+                   visible=True,
+                   name = 'T1 values (ms)')
+
+data=[trace1, trace2, trace3, trace5]
+
+
+updatemenus = list([
+    dict(active=1,
+         x = 0.09,
+         xanchor = 'left',
+         y = -0.15,
+         yanchor = 'bottom',
+         direction = 'up',
+         font=dict(
+                family='Times New Roman',
+                size=16
+            ),
+         buttons=list([   
+            dict(label = '3 deg',
+                 method = 'update',
+                 args = [{'visible': [True, False, False, True]},
+                         ]),
+            dict(label = '20 deg',
+                 method = 'update',
+                 args = [{'visible': [False, True, False, True]},
+                           ]),
+            dict(label = 'B<sub>1</sub> map',
+                 method = 'update',
+                 args = [{'visible': [False, False, True, True]},
+                           ])
+        ])
+    )
+])
+
+layout = dict(
+    width=560,
+    height=345,
+    margin = dict(
+                t=40,
+                r=50,
+                b=10,
+                l=50),
+    annotations=[
+        dict(
+            x=0.055,
+            y=1.15,
+            showarrow=False,
+            text='Input Data',
+            font=dict(
+                family='Times New Roman',
+                size=26
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=0.6,
+            y=1.15,
+            showarrow=False,
+            text='T<sub>1</sub> map',
+            font=dict(
+                family='Times New Roman',
+                size=26
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=1.22,
+            y=1.15,
+            showarrow=False,
+            text='T<sub>1</sub> (ms)',
+            font=dict(
+                family='Times New Roman',
+                size=26
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+    ],
+    xaxis = dict(range = [0,127], autorange = False,
+             showgrid = False, zeroline = False, showticklabels = False,
+             ticks = '', domain=[0, 0.58]),
+    yaxis = dict(range = [0,127], autorange = False,
+             showgrid = False, zeroline = False, showticklabels = False,
+             ticks = '', domain=[0, 1]),
+    xaxis2 = dict(range = [0,127], autorange = False,
+             showgrid = False, zeroline = False, showticklabels = False,
+             ticks = '', domain=[0.40, 0.98]),
+    yaxis2 = dict(range = [0,127], autorange = False,
+             showgrid = False, zeroline = False, showticklabels = False,
+             ticks = '', domain=[0, 1], anchor='x2'),
+    showlegend = False,
+    autosize = False,
+    updatemenus=updatemenus
+)
+
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'vfa_fig_7.html', config = config)
+display(HTML('vfa_fig_7.html'))

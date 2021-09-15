@@ -1,0 +1,499 @@
+## Data Fitting
+
+<p style="text-align:justify;">
+Several factors impact the choice of the inversion recovery fitting algorithm.  If only magnitude images are available, then a polarity-inversion is often implemented to restore the non-exponential magnitude curves (Figure 3) into the exponential form (Figure 2). This process is sensitive to noise due to the Rician noise creating a non-zero level at the signal null. If phase data is also available, then a phase term must be added to the fitting equation (Barral et al. 2010). Equation 3 must only be used to fit data for the long TR regime (TR > 5T<sub>1</sub>), which in practice is rarely satisfied for all tissues in subjects.
+</p>
+
+<p style="text-align:justify;">
+Early implementations of inversion recovery fitting algorithms were designed around the computational power available at the time. These included the “null method” (Pykett et al. 1983), assuming that each T<sub>1</sub> value has unique zero-crossings (see Figure 2), and linear fitting of a rearranged version of Eq. 3 on a semi-log plot (Fukushima & Roeder 1981). Nowadays, a non-linear least-squares fitting algorithm (e.g. Levenberg-Marquardt) is more appropriate, and can be applied to either approximate or general forms of the signal model (Eq. 3 or Eq. 1). More recent work (Barral et al. 2010) demonstrated that T<sub>1</sub> maps can also be fitted much faster (up to 75 times compared to Levenberg-Marquardt) to fit  Eq. 1 – without a precision penalty – by using a reduced-dimension non-linear least squares (RD-NLS) algorithm. It was demonstrated that the following simplified 5-parameter equation can be sufficient for accurate T<sub>1</sub> mapping:
+</p>
+
+\begin{equation}\label{eq:4}
+S(TI) = a + be^{- \frac{TI}{T_1}}
+\end{equation}
+
+
+<p style="text-align:justify;">
+where <i>a</i> and <i>b</i> are complex values. If magnitude-only data is available, a 3-parameter model can be sufficient by taking the absolute value of Eq. 4.  While the RD-NLS algorithms are too complex to be presented here (the reader is referred to the paper, (Barral et al. 2010)),  the code for these algorithms <a href="http://www-mrsrl.stanford.edu/~jbarral/t1map.html" target="_blank">was released open-source</a> along with the original publication, and is also available as a <a href="https://github.com/neuropoly/qMRLab" target="_blank">qMRLab</a> T<sub>1</sub> mapping model. One important thing to note about Eq. 4 is that it is general – no assumption is made about TR – and is thus as robust as Eq. 1 as long as all pulse sequence parameters other than TI are kept constant between each measurement. Figure 4 compares simulated data (Eq. 1) using a range of TRs (1.5T<sub>1</sub> to 5T<sub>1</sub>) fitted using either RD-NLS & Eq. 4 or a Levenberg-Marquardt fit of Eq. 2.
+</p>
+
+<p style="text-align:justify;">
+<b>
+Figure 4. Fitting comparison of simulated data (blue markers) with T<sub>1</sub> = 1 s and TR = 1.5 to 5 s, using fitted using RD-NLS & Eq. 4 (green) and Levenberg-Marquardt & Eq. 2 (orange, long TR approximation).
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+clear all
+
+%% Setup parameters
+% All times are in milliseconds
+% All flip angles are in degrees
+
+params.TI = 50:50:1500;
+TR_range = 1500:50:5000;
+
+params.EXC_FA = 90;
+params.INV_FA = 180;
+
+params.T1 = 1000;
+
+%% Calculate signals
+%
+% The option 'GRE-IR' selects the analytical equations for the gradient echo readout inversion recovery experiment
+% The option '1' is a flag that selects full analytical solution equation (no approximation), Eq. 1 of the blog post.
+%
+% To see all the options available, run `help inversion_recovery.analytical_solution`
+
+for ii = 1:length(TR_range)
+    params.TR = TR_range(ii);
+    Mz_analytical(ii,:) = inversion_recovery.analytical_solution(params, 'GRE-IR', 1);
+end
+
+%% Fit data using Levenberg-Marquardt with the long TR approximation equation
+%
+% The option '4' is a flag that selects the long TR approximation of the analytical solution (TR>>T1), Eq. 3 of the blog post.
+%
+% To see all the options available, run `help inversion_recovery.fit_lm`
+
+
+for ii=1:length(TR_range)
+    fitOutput_lm{ii} = inversion_recovery.fit_lm(Mz_analytical(ii,:), params, 4);
+    T1_lm(ii) = fitOutput_lm{ii}.T1;
+end
+
+%% Fit data using the RDLS method (Barral), Eq. 4 of the blog post.
+%
+
+% Create a qMRLab inversion recovery model object and load protocol values
+irObj = inversion_recovery();
+irObj.Prot.IRData.Mat = params.TI';
+
+for ii=1:length(TR_range)
+
+    data.IRData = Mz_analytical(ii,:);
+
+    fitOutput_barral{ii} = irObj.fit(data);
+
+    T1_barral(ii) = fitOutput_barral{ii}.T1;
+
+end
+
+%use sos
+%get params --from Octave
+%get Mz_analytical --from Octave
+%get fitOutput_lm --from Octave
+%get fitOutput_barral --from Octave
+%get TR_range --from Octave
+
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+data1 = [dict(
+        visible = False,
+        mode = 'markers',
+        x = params["TI"],
+        y = abs(np.squeeze(np.asarray(Mz_analytical[ii]))),
+        name = 'Simulated data',
+        text = 'Simulated data',
+        hoverinfo = 'x+y+text') for ii in range(len(TR_range))]
+
+data1[10]['visible'] = True
+
+data2 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["TI"],
+        y = abs(fitOutput_lm[ii]['c'] * (1 - 2*np.exp(-params['TI']/fitOutput_lm[ii]['T1']))),
+        name = '[C(1-2e<sup>-TI/T<sub>1</sub></sup>)] Fitted T<sub>1</sub>: <b>' + str(round(fitOutput_lm[ii]['T1'])) + ' ms',
+        text = '[C(1-2e<sup>-TI/T<sub>1</sub></sup>)]',
+        hoverinfo = 'x+y+text') for ii in range(len(TR_range))]
+
+data2[10]['visible'] = True
+
+data3 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["TI"],
+        y = abs((fitOutput_barral[ii]['ra']+fitOutput_barral[ii]['rb']*np.exp(-params['TI']/fitOutput_barral[ii]['T1']))),
+        name = '[<i>a</i>+<i>b</i>e<sup>-TI/T<sub>1</sub></sup>] Fitted T<sub>1</sub>: <b>' + str(round(fitOutput_barral[ii]['T1'])) + ' ms',
+        text = '[<i>a</i>+<i>b</i>e<sup>-TI/T<sub>1</sub></sup>]',
+        hoverinfo = 'x+y+text') for ii in range(len(TR_range))]
+
+data3[10]['visible'] = True
+
+
+
+data = data1 + data2 + data3
+
+steps = []
+for i in range(len(TR_range)):
+    step = dict(
+        method = 'restyle',  
+        args = ['visible', [False] * len(data1)],
+        label = str(TR_range[i])
+        )
+    step['args'][1][i] = True # Toggle i'th trace to "visible"
+    steps.append(step)
+
+sliders = [dict(
+    x = 0,
+    y = -0.02,
+    active = 10,
+    currentvalue = {"prefix": "TR value (ms): <b>"},
+    pad = {"t": 50, "b": 10},
+    steps = steps
+)]
+
+layout = go.Layout(
+    width=580,
+    height=450,
+    margin=go.layout.Margin(
+        l=80,
+        r=40,
+        b=60,
+        t=10,
+    ),
+    annotations=[
+        dict(
+            x=0.5004254919715793,
+            y=-0.18,
+            showarrow=False,
+            text='Inversion Time – TI (ms)',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=-0.14,
+            y=0.5,
+            showarrow=False,
+            text='Signal (magnitude)',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        ),
+    ],
+    xaxis=dict(
+        autorange=False,
+        range=[0, params['TI'][-1]],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    yaxis=dict(
+        autorange=False,
+        range=[0, 1],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    legend=dict(
+        x=0.2,
+        y=0.9,
+        traceorder='normal',
+        font=dict(
+            family='Times New Roman',
+            size=12,
+            color='#000'
+        ),
+        bordercolor='#000000',
+        borderwidth=2
+    ), 
+    sliders=sliders
+)
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'ir_fig_4.html', config = config)
+display(HTML('ir_fig_4.html'))
+
+<p style="text-align:justify;">
+Figure 5 displays an example brain dataset from an inversion recovery experiment, along with the T<sub>1</sub> map fitted using the RD-NLS technique.
+</p>
+
+<p style="text-align:justify;">
+<b>
+Figure 5. Example inversion recovery dataset of a healthy adult brain (left). Inversion times used to acquire this magnitude image dataset were 30 ms, 530 ms, 1030 ms, and 1530 ms, and the TR used was 1550 ms. The T<sub>1</sub> map (right) was fitted using a RD-NLS algorithm.
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+
+clear all
+
+%% MATLAB/OCTAVE CODE
+
+% Load data into environment, and rotate mask to be aligned with IR data
+load('data/ir_dataset/IRData.mat');
+load('data/ir_dataset/IRMask.mat');
+
+IRData = data;
+Mask = imrotate(Mask,180);
+clear data
+
+% Format qMRLab inversion_recovery model parameters, and load them into the Model object
+Model = inversion_recovery; 
+TI = [30; 530; 1030; 1530];
+Model.Prot.IRData.Mat = [TI];
+
+% Format data structure so that they may be fit by the model
+data = struct();
+data.IRData= double(IRData);
+data.Mask= double(Mask);
+
+FitResults = FitData(data,Model,0); % The '0' flag is so that no wait bar is shown.
+
+% Code used to re-orient the images to make pretty figures, and to assign variables with the axis lengths.
+
+T1_map = imrotate(FitResults.T1.*Mask,-90);
+xAxis = [0:size(T1_map,2)-1];
+yAxis = [0:size(T1_map,1)-1];
+
+% Raw MRI data at different TI values
+TI_0030 = imrotate(squeeze(IRData(:,:,:,1).*Mask),-90);
+TI_0530 = imrotate(squeeze(IRData(:,:,:,2).*Mask),-90);
+TI_1030 = imrotate(squeeze(IRData(:,:,:,3).*Mask),-90);
+TI_1530 = imrotate(squeeze(IRData(:,:,:,4).*Mask),-90);
+
+%use sos
+%get T1_map --from Octave
+%get TI_0030 --from Octave
+%get TI_0530 --from Octave
+%get TI_1030 --from Octave
+%get TI_1530 --from Octave
+%get xAxis --from Octave
+%get yAxis --from Octave
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+from plotly import tools
+trace1 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=TI_0030,
+                   colorscale='Greys',
+                   showscale = False,
+                   visible=False,
+                   name = 'Signal')
+trace2 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=TI_0530,
+                   colorscale='Greys',
+                   showscale = False,
+                   visible=False,
+                   name = 'Signal')
+trace3 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=TI_1030,
+                   colorscale='Greys',
+                   showscale = False,
+                   visible=True,
+                   name = 'Signal')
+trace4 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=TI_1530,
+                   colorscale='Greys',
+                   visible=False,
+                   showscale = False,
+                   name = 'Signal')
+trace5 = go.Heatmap(x = xAxis,
+                   y = yAxis,
+                   z=T1_map,
+                   colorscale='Portland',
+                   xaxis='x2',
+                   yaxis='y2',
+                   visible=True,
+                   name = 'T1 values (ms)')
+
+data=[trace1, trace2, trace3, trace4, trace5]
+
+
+updatemenus = list([
+    dict(active=2,
+         x = 0.12,
+         xanchor = 'left',
+         y = -0.15,
+         yanchor = 'bottom',
+         direction = 'up',
+         font=dict(
+                family='Times New Roman',
+                size=16
+            ),
+         buttons=list([   
+            dict(label = '30 ms',
+                 method = 'update',
+                 args = [{'visible': [True, False, False, False, True]},
+                         ]),
+            dict(label = '530 ms',
+                 method = 'update',
+                 args = [{'visible': [False, True, False, False, True]},
+                         ]),
+            dict(label = '1030 ms',
+                 method = 'update',
+                 args = [{'visible': [False, False, True, False, True]},
+                         ]),
+            dict(label = '1530 ms',
+                 method = 'update',
+                 args = [{'visible': [False,False, False, True, True]},
+                         ])
+        ]),
+    )
+])
+
+layout = dict(
+    width=560,
+    height=345,
+    margin = dict(
+                t=40,
+                r=50,
+                b=10,
+                l=50),
+    annotations=[
+        dict(
+            x=0.06,
+            y=1.15,
+            showarrow=False,
+            text='MR Image',
+            font=dict(
+                family='Times New Roman',
+                size=26
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=0.6,
+            y=1.15,
+            showarrow=False,
+            text='T<sub>1</sub> map',
+            font=dict(
+                family='Times New Roman',
+                size=26
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=1.22,
+            y=1.15,
+            showarrow=False,
+            text='T<sub>1</sub> (ms)',
+            font=dict(
+                family='Times New Roman',
+                size=26
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=0.02,
+            y=-0.15,
+            showarrow=False,
+            text='TI:',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+    ],
+    xaxis = dict(range = [0,127], autorange = False,
+             showgrid = False, zeroline = False, showticklabels = False,
+             ticks = '', domain=[0, 0.6]),
+    yaxis = dict(range = [0,127], autorange = False,
+             showgrid = False, zeroline = False, showticklabels = False,
+             ticks = '', domain=[0, 1]),
+    xaxis2 = dict(range = [0,127], autorange = False,
+             showgrid = False, zeroline = False, showticklabels = False,
+             ticks = '', domain=[0.4, 1]),
+    yaxis2 = dict(range = [0,127], autorange = False,
+             showgrid = False, zeroline = False, showticklabels = False,
+             ticks = '', domain=[0, 1], anchor='x2'),
+    showlegend = False,
+    autosize = False,
+    updatemenus=updatemenus
+)
+
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'ir_fig_5.html', config = config)
+display(HTML('ir_fig_5.html'))

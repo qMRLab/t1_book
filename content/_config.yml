@@ -1,0 +1,47 @@
+# Book settings
+title                       : "Quantitative T &#8321; MRI"
+author                      : <a href="https://github.com/Notebook-Factory">Notebook-factory team</a>
+copyright                   : "2021"  
+logo                        : images/logo.png  
+exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints"]
+
+execute:
+  execute_notebooks: 'off'
+
+only_build_toc_files: true 
+
+html:
+  favicon                   : images/favicon.ico
+  use_edit_page_button      : true  
+  use_repository_button     : true  
+  use_issues_button         : true  
+  extra_navbar              : Return to <a href="https://conp-pcno.github.io/">NeuroLibre</a>  
+  home_page_in_navbar       : true  
+  baseurl                   : ""  
+  comments:
+    hypothesis              : true
+
+
+launch_buttons:
+  notebook_interface        : "jupyterlab"     
+  binderhub_url             : "https://mybinder.org"
+  thebe                     : true  
+
+repository:
+  url                       : https://github.com/zelenkastiot/t1_book_update
+  branch                    : main  
+
+
+parse:
+  myst_enable_extensions:
+    - html_image
+    - amsmath
+    - colon_fence
+    - deflist 
+    - dollarmath
+    - html_admonition
+    - html_image
+    - linkify 
+    - replacements
+    - smartquotes
+    - substitution

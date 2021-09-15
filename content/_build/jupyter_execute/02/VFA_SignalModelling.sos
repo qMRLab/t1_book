@@ -1,0 +1,650 @@
+## Signal Modelling
+
+<p style="text-align:justify;">
+The steady-state longitudinal magnetization of an ideal variable flip angle experiment can be analytically solved from the Bloch equations for the spoiled gradient echo pulse sequence {<i>θ<sub>n</sub></i>–TR}:
+</p>
+
+
+\begin{equation*}\tag{1}
+M_{Z}(\theta_n) = M_0 \frac{1-e^{- \frac{TR}{T_1}}}{1-cos(\theta_n) e^{- \frac{TR}{T_1}}} sin(\theta_n)
+\end{equation*}
+
+<p style="text-align:justify;">
+where <i>M<sub>z</sub></i> is the longitudinal magnetization, <i>M</i><sub>0</sub> is the magnetization at thermal equilibrium, TR is the pulse sequence repetition time (Figure 1), and <i>θ<sub>n</sub></i> is the excitation flip angle. The <i>M<sub>z</sub></i> curves of different T<sub>1</sub> values for a range of <i>θ<sub>n</sub></i> and TR values are shown in Figure 2.
+</p>
+
+
+<p style="text-align:justify;">
+<b>
+Figure 2. Variable flip angle technique signal curves (Eq. 1) for three different T<sub>1</sub> values, approximating the main types of tissue in the brain at 3T.
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+clear all
+
+%% Setup parameters
+% All times are in milliseconds
+% All flip angles are in degrees
+
+TR_range = 5:5:200;
+
+params.EXC_FA = 1:90;
+
+%% Calculate signals
+%
+% To see all the options available, run `help vfa_t1.analytical_solution`
+
+for ii = 1:length(TR_range)
+    params.TR = TR_range(ii);
+    
+    % White matter
+    params.T1 = 900; % in milliseconds
+
+    signal_WM(ii,:) = vfa_t1.analytical_solution(params);
+
+    % Grey matter
+    params.T1 = 1500;  % in milliseconds
+    signal_GM(ii,:) = vfa_t1.analytical_solution(params);
+
+    % CSF
+    params.T1 = 4000;  % in milliseconds
+    signal_CSF(ii,:) = vfa_t1.analytical_solution(params);
+end
+
+
+
+%use sos
+%get params --from Octave
+%get TR_range --from Octave
+%get signal_WM --from Octave
+%get signal_GM --from Octave
+%get signal_CSF --from Octave
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+data1 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["EXC_FA"],
+        y = abs(np.squeeze(np.asarray(signal_WM[ii]))),
+        name = 'T<sub>1</sub> = 0.9 s (White Matter)',
+        text = 'T<sub>1</sub> = 0.9 s (White Matter)',
+        hoverinfo = 'x+y+text') for ii in range(len(TR_range))]
+
+data1[4]['visible'] = True
+
+data2 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["EXC_FA"],
+        y = abs(np.squeeze(np.asarray(signal_GM[ii]))),
+        name = 'T<sub>1</sub> = 1.5 s (Grey Matter)',
+        text = 'T<sub>1</sub> = 1.5 s (Grey Matter)',
+        hoverinfo = 'x+y+text') for ii in range(len(TR_range))]
+
+data2[4]['visible'] = True
+
+data3 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["EXC_FA"],
+        y = abs(np.squeeze(np.asarray(signal_CSF[ii]))),
+        name = 'T<sub>1</sub> = 4.0 s (Cerebrospinal Fluid)',
+        text = 'T<sub>1</sub> = 4.0 s (Cerebrospinal Fluid)',
+        hoverinfo = 'x+y+text') for ii in range(len(TR_range))]
+
+data3[4]['visible'] = True
+
+data = data1 + data2 + data3
+
+steps = []
+for i in range(len(TR_range)):
+    step = dict(
+        method = 'restyle',  
+        args = ['visible', [False] * len(data1)],
+        label = str(TR_range[i])
+        )
+    step['args'][1][i] = True # Toggle i'th trace to "visible"
+    steps.append(step)
+
+sliders = [dict(
+    x = 0,
+    y = -0.02,
+    active = 2,
+    currentvalue = {"prefix": "TR value (ms): <b>"},
+    pad = {"t": 50, "b": 10},
+    steps = steps
+)]
+
+layout = go.Layout(
+    width=580,
+    height=450,
+    margin=go.layout.Margin(
+        l=80,
+        r=40,
+        b=60,
+        t=10,
+    ),
+    annotations=[
+        dict(
+            x=0.5004254919715793,
+            y=-0.18,
+            showarrow=False,
+            text='Excitation Flip Angle (°)',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=-0.15,
+            y=0.5,
+            showarrow=False,
+            text='Long. Magnetization (M<sub>z</sub>)',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        ),
+    ],
+    xaxis=dict(
+        autorange=False,
+        range=[0, params['EXC_FA'][-1]],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    yaxis=dict(
+        autorange=True,
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    legend=dict(
+        x=0.5,
+        y=0.9,
+        traceorder='normal',
+        font=dict(
+            family='Times New Roman',
+            size=12,
+            color='#000'
+        ),
+        bordercolor='#000000',
+        borderwidth=2
+    ), 
+    sliders=sliders
+)
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'vfa_fig_2.html', config = config)
+display(HTML('vfa_fig_2.html'))
+
+
+<p style="text-align:justify;">
+From Figure 2, it is clearly seen that the flip angle at which the steady-state signal is maximized is dependent on the T<sub>1</sub> and TR values. This flip angle is a well known quantity, called the Ernst angle (Ernst & Anderson 1966), which can be solved analytically from Equation 1 using properties of calculus:
+</p>
+
+
+\begin{equation*}\tag{2}
+\theta_{Ernst} = acos(e^{- \frac{TR}{T_1}})
+\end{equation*}
+
+<p style="text-align:justify;">
+The closed-form solution (Equation 1) makes several assumptions which in practice may not always hold true if care is not taken. Mainly, it is assumed that the longitudinal magnetization has reached a steady state after a large number of TRs, and that the transverse magnetization is perfectly spoiled at the end of each TR. Bloch simulations – a numerical approach at solving the Bloch <i>equations</i> for a set of spins at each time point –  provide a more realistic estimate of the signal if the number of repetition times is small (i.e. a steady-state is not achieved). As can be seen from Figure 3, the number of repetitions required to reach a steady state not only depends on T<sub>1</sub>, but also on the flip angle; flip angles near the Ernst angle need more TRs to reach a steady state. Preparation pulses or an outward-in k-space acquisition pattern are typically sufficient to reach a steady state by the time that the center of k-space is acquired, which is where most of the image contrast resides.
+</p>
+
+<p style="text-align:justify;">
+<b>
+Figure 3. Signal curves simulated using Bloch simulations (orange) for a number of repetitions ranging from 1 to 150, plotted against the ideal case (Equation 1 – blue). Simulation details:  TR = 25 ms, T<sub>1</sub> = 900 ms, 100 spins. Ideal spoiling was used for this set of Bloch simulations (transverse magnetization was set to 0 at the end of each TR).
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+clear all
+
+%% Setup parameters
+% All times are in milliseconds
+% All flip angles are in degrees
+
+% White matter
+params.T1 = 900; % in milliseconds
+params.T2 = 10000;
+params.TR = 25;
+params.TE = 5;
+params.EXC_FA = 1:90;
+Nex_range = 1:1:150;
+
+%% Calculate signals
+%
+% To see all the options available, run `help vfa_t1.analytical_solution`
+
+for ii = 1:length(Nex_range)
+    params.Nex = Nex_range(ii);
+    
+    signal_analytical(ii,:) = vfa_t1.analytical_solution(params);
+
+    [~, complex_signal] = vfa_t1.bloch_sim(params);
+    signal_blochsim(ii,:) = abs(complex(complex_signal));
+end
+
+
+
+%use sos
+%get params --from Octave
+%get Nex_range --from Octave
+%get signal_analytical --from Octave
+%get signal_blochsim --from Octave
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+data1 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["EXC_FA"],
+        y = abs(np.squeeze(np.asarray(signal_analytical[ii]))),
+        name = 'Analytical Solution',
+        text = 'Analytical Solution',
+        hoverinfo = 'x+y+text') for ii in range(len(Nex_range))]
+
+data1[49]['visible'] = True
+
+data2 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["EXC_FA"],
+        y = abs(np.squeeze(np.asarray(signal_blochsim[ii]))),
+        name = 'Bloch Simulation',
+        text = 'Bloch Simulation',
+        hoverinfo = 'x+y+text') for ii in range(len(Nex_range))]
+
+data2[49]['visible'] = True
+
+data = data1 + data2
+
+steps = []
+for i in range(len(Nex_range)):
+    step = dict(
+        method = 'restyle',  
+        args = ['visible', [False] * len(data1)],
+        label = str(Nex_range[i])
+        )
+    step['args'][1][i] = True # Toggle i'th trace to "visible"
+    steps.append(step)
+
+sliders = [dict(
+    x = 0,
+    y = -0.02,
+    active = 49,
+    currentvalue = {"prefix": "n<sup>th</sup> TR: <b>"},
+    pad = {"t": 50, "b": 10},
+    steps = steps
+)]
+
+layout = go.Layout(
+    width=580,
+    height=450,
+    margin=go.layout.Margin(
+        l=80,
+        r=40,
+        b=60,
+        t=10,
+    ),
+    annotations=[
+        dict(
+            x=0.5004254919715793,
+            y=-0.18,
+            showarrow=False,
+            text='Excitation Flip Angle (°)',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=-0.15,
+            y=0.5,
+            showarrow=False,
+            text='Signal',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        ),
+    ],
+    xaxis=dict(
+        autorange=False,
+        range=[0, params['EXC_FA'][-1]],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    yaxis=dict(
+        autorange=True,
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    legend=dict(
+        x=0.5,
+        y=0.9,
+        traceorder='normal',
+        font=dict(
+            family='Times New Roman',
+            size=12,
+            color='#000'
+        ),
+        bordercolor='#000000',
+        borderwidth=2
+    ), 
+    sliders=sliders
+)
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'vfa_fig_3.html', config = config)
+display(HTML('vfa_fig_3.html'))
+
+
+<p style="text-align:justify;">
+Sufficient spoiling is likely the most challenging parameter to control for in a VFA experiment. A combination of both gradient spoiling and RF phase spoiling (Zur et al. 1991; Bernstein et al. 2004) are typically recommended (Figure 4). It has also been shown that the use of very strong  gradients, introduces diffusion effects (not considered in Figure 4), further improving the spoiling efficacy in the VFA pulse sequence (Yarnykh 2010).
+</p>
+
+<p style="text-align:justify;">
+<b>
+Figure 4. Signal curves estimated using Bloch simulations for three categories of signal spoiling: (1) ideal spoiling (blue), gradient & RF Spoiling (orange), and no spoiling (green). Simulations details: TR = 25 ms, T<sub>1</sub> = 900 ms, T<sub>e</sub> = 100 ms, TE = 5 ms, 100 spins. For the ideal spoiling case, the transverse magnetization is set to zero at the end of each TR. For the gradient & RF spoiling case, each spin is rotated by different increments of phase (2𝜋 / # of spins) to simulate complete decoherence from gradient spoiling, and the RF phase of the excitation pulse is  ɸ<sub><i>n</i></sub> = ɸ<sub><i>n</i>-1</sub> + <i>n</i>ɸ<sub>0</sub> = ½ ɸ<sub>0</sub>(<i>n</i><sup>2</sup> + <i>n</i> + 2) (Bernstein et al. 2004) with ɸ<sub>0</sub> = 117° (Zur et al. 1991) after each TR.
+</b>
+</p>
+
+%use octave
+
+% Verbosity level 0 overrides the disp function and supresses warnings.
+% Once executed, they cannot be restored in this session
+% (kernel needs to be restarted or a new notebook opened.)
+VERBOSITY_LEVEL = 0;
+
+if VERBOSITY_LEVEL==0
+    % This hack was used to supress outputs from external tools
+    % in the Jupyter Book.
+    function disp(x)
+    end
+    warning('off','all')
+end
+
+try
+    cd qMRLab
+catch
+    try
+        cd ../../../qMRLab
+    catch
+        cd ../qMRLab
+    end
+end
+
+startup
+clear all
+
+%% Setup parameters
+% All times are in milliseconds
+% All flip angles are in degrees
+
+% White matter
+params.T1 = 900; % in milliseconds
+params.T2 = 100;
+params.TR = 25;
+params.TE = 5;
+params.EXC_FA = 1:90;
+Nex_range = [1:9, 10:10:100];
+
+%% Calculate signals
+%
+% To see all the options available, run `help vfa_t1.analytical_solution`
+
+for ii = 1:length(Nex_range)
+    params.Nex = Nex_range(ii);
+    
+    params.crushFlag = 1;
+    
+    [~, complex_signal] = vfa_t1.bloch_sim(params);
+    signal_ideal_spoil(ii,:) = abs(complex_signal);
+    
+    
+    params.inc = 117;
+    params.partialDephasing = 1;
+    params.partialDephasingFlag = 1;
+    params.crushFlag = 0;
+    
+    [~, complex_signal] = vfa_t1.bloch_sim(params);
+    signal_optimal_crush_and_rf_spoil(ii,:) = abs(complex_signal);
+    
+    params.inc = 0;
+    params.partialDephasing = 0;
+
+    [~, complex_signal] = vfa_t1.bloch_sim(params);
+    signal_no_gradient_and_rf_spoil(ii,:) = abs(complex_signal);
+end
+
+
+
+%use sos
+%get params --from Octave
+%get Nex_range --from Octave
+%get signal_ideal_spoil --from Octave
+%get signal_optimal_crush_and_rf_spoil --from Octave
+%get signal_no_gradient_and_rf_spoil --from Octave
+
+import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+config={'showLink': False, 'displayModeBar': False}
+
+init_notebook_mode(connected=True)
+
+from IPython.core.display import display, HTML
+
+data1 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["EXC_FA"],
+        y = abs(np.squeeze(np.asarray(signal_ideal_spoil[ii]))),
+        name = 'Ideal Spoiling',
+        text = 'Ideal Spoiling',
+        hoverinfo = 'x+y+text') for ii in range(len(Nex_range))]
+
+data1[10]['visible'] = True
+
+data2 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["EXC_FA"],
+        y = abs(np.squeeze(np.asarray(signal_optimal_crush_and_rf_spoil[ii]))),
+        name = 'Gradient & RF Spoiling',
+        text = 'Gradient & RF Spoiling',
+        hoverinfo = 'x+y+text') for ii in range(len(Nex_range))]
+
+data2[10]['visible'] = True
+
+data3 = [dict(
+        visible = False,
+        mode = 'lines',
+        x = params["EXC_FA"],
+        y = abs(np.squeeze(np.asarray(signal_no_gradient_and_rf_spoil[ii]))),
+        name = 'No Spoiling',
+        text = 'No Spoiling',
+        hoverinfo = 'x+y+text') for ii in range(len(Nex_range))]
+
+data3[10]['visible'] = True
+
+data = data1 + data2+ data3
+
+steps = []
+for i in range(len(Nex_range)):
+    step = dict(
+        method = 'restyle',  
+        args = ['visible', [False] * len(data1)],
+        label = str(Nex_range[i])
+        )
+    step['args'][1][i] = True # Toggle i'th trace to "visible"
+    steps.append(step)
+
+sliders = [dict(
+    x = 0,
+    y = -0.02,
+    active = 10,
+    currentvalue = {"prefix": "n<sup>th</sup> TR: <b>"},
+    pad = {"t": 50, "b": 10},
+    steps = steps
+)]
+
+layout = go.Layout(
+    width=580,
+    height=450,
+    margin=go.layout.Margin(
+        l=80,
+        r=40,
+        b=60,
+        t=10,
+    ),
+    annotations=[
+        dict(
+            x=0.5004254919715793,
+            y=-0.18,
+            showarrow=False,
+            text='Excitation Flip Angle (°)',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            xref='paper',
+            yref='paper'
+        ),
+        dict(
+            x=-0.15,
+            y=0.5,
+            showarrow=False,
+            text='Signal',
+            font=dict(
+                family='Times New Roman',
+                size=22
+            ),
+            textangle=-90,
+            xref='paper',
+            yref='paper'
+        ),
+    ],
+    xaxis=dict(
+        autorange=False,
+        range=[0, params['EXC_FA'][-1]],
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    yaxis=dict(
+        autorange=True,
+        showgrid=False,
+        linecolor='black',
+        linewidth=2
+    ),
+    legend=dict(
+        x=0.5,
+        y=0.9,
+        traceorder='normal',
+        font=dict(
+            family='Times New Roman',
+            size=12,
+            color='#000'
+        ),
+        bordercolor='#000000',
+        borderwidth=2
+    ), 
+    sliders=sliders
+)
+
+fig = dict(data=data, layout=layout)
+
+plot(fig, filename = 'vfa_fig_4.html', config = config)
+display(HTML('vfa_fig_4.html'))
