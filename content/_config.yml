@@ -15,7 +15,7 @@ html:
   use_edit_page_button      : true  
   use_repository_button     : true  
   use_issues_button         : true  
-  extra_navbar              : Return to <a href="https://conp-pcno.github.io/">NeuroLibre</a>  
+  extra_navbar              : Return to <a href="https://neurolibre.org/">NeuroLibre</a>  
   home_page_in_navbar       : true  
   baseurl                   : ""  
   comments:
@@ -24,7 +24,7 @@ html:
 
 launch_buttons:
   notebook_interface        : "jupyterlab"     
-  binderhub_url             : "https://mybinder.org"
+  binderhub_url             : "https://binder.conp.cloud"
   thebe                     : true  
 
 repository:

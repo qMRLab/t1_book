@@ -5,7 +5,7 @@ The steady-state longitudinal magnetization of an inversion recovery experiment 
 </p>
 
 \begin{equation}\label{eq:1}
-M_{Z}(TI) = M_0 \frac{1-cos(\theta_{180})e^{- \frac{TR}{T_1}} -[1-cos(\theta_{180})]e^{- \frac{TI}{T_1}}}{1 - cos(\theta_{180}) cos(\theta_{90}) e^{- \frac{TR}{T_1}}}
+M_{z}(TI) = M_0 \frac{1-\text{cos}(\theta_{180})e^{- \frac{TR}{T_1}} -[1-\text{cos}(\theta_{180})]e^{- \frac{TI}{T_1}}}{1 - \text{cos}(\theta_{180}) \text{cos}(\theta_{90}) e^{- \frac{TR}{T_1}}}
 \end{equation}
 
 <p style="text-align:justify;">
@@ -22,7 +22,7 @@ where the first three terms and the denominator of Eq. 1 have been grouped toget
 </p>
 
 \begin{equation}\label{eq:3}
-M_Z(TI) = C(1-2e^{- \frac{TI}{T_1}})
+M_z(TI) = C(1-2e^{- \frac{TI}{T_1}})
 \end{equation}
 
 

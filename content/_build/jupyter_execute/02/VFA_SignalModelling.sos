@@ -6,7 +6,7 @@ The steady-state longitudinal magnetization of an ideal variable flip angle expe
 
 
 \begin{equation*}\tag{1}
-M_{Z}(\theta_n) = M_0 \frac{1-e^{- \frac{TR}{T_1}}}{1-cos(\theta_n) e^{- \frac{TR}{T_1}}} sin(\theta_n)
+M_{z}(\theta_n) = M_0 \frac{1-e^{- \frac{TR}{T_1}}}{1-\text{cos}(\theta_n) e^{- \frac{TR}{T_1}}} \text{sin}(\theta_n)
 \end{equation*}
 
 <p style="text-align:justify;">
@@ -228,7 +228,7 @@ From Figure 2, it is clearly seen that the flip angle at which the steady-state 
 
 
 \begin{equation*}\tag{2}
-\theta_{Ernst} = acos(e^{- \frac{TR}{T_1}})
+\theta_{Ernst} = \text{acos}(e^{- \frac{TR}{T_1}})
 \end{equation*}
 
 <p style="text-align:justify;">

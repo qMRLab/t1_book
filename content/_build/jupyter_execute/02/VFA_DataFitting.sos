@@ -5,7 +5,7 @@ At first glance, one could be tempted to fit VFA data using a non-linear least s
 </p>
 
 \begin{equation*}\tag{3}
-\frac{S_n}{sin\theta_n} = e^{- \frac{TR}{T_1}} \frac{S_n}{tan\theta_n} + C (1-e^{- \frac{TR}{T_1}})
+\frac{S_n}{ \text{sin}(\theta_n)} = e^{- \frac{TR}{T_1}} \frac{S_n}{ \text{tan}(\theta_n)} + C (1-e^{- \frac{TR}{T_1}})
 \end{equation*}
 
 
@@ -14,7 +14,7 @@ As the third term does not change between measurements (it is constant for each 
 </p>
 
 \begin{equation*}\tag{4}
-\frac{S_n}{sin\theta_n} = e^{- \frac{TR}{T_1}} \frac{S_n}{tan\theta_n} + C
+\frac{S_n}{ \text{sin}(\theta_n)} = e^{- \frac{TR}{T_1}} \frac{S_n}{ \text{tan}(\theta_n)} + C
 \end{equation*}
 
 <p style="text-align:justify;">
@@ -23,7 +23,7 @@ With this rearranged form of Equation 1, T<sub>1</sub> can be simply estimated f
 
 
 \begin{equation*}\tag{5}
-T_1 = - \frac{TR}{ln(slope)}
+T_1 = - \frac{TR}{ \text{ln}(slope)}
 \end{equation*}
 
 <p style="text-align:justify;">
