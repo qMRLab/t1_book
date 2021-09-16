@@ -16,9 +16,5 @@ Figure 1. Simplified pulse sequence diagram of a variable flip angle (VFA) pulse
 
 <br>
 
-```{figure} images/vfa_pulsesequence.png
----
-width: 500px
-name: Fig1
----
-```
+<center><img src="../_images/vfa_pulsesequence.png" style="width:500px;height:auto;"></center>
+
