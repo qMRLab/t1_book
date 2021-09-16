@@ -2,7 +2,7 @@ FROM jupyter/base-notebook:8ccdfc1da8d5
 
 USER root
 
-RUN apt-get update &&      \
+RUN apt-get update &&       \
     apt-get install -y --no-install-recommends \
         build-essential=12.4ubuntu1 \
         emacs \
@@ -65,20 +65,21 @@ RUN cd $HOME/work;   \
                 repo2data; \
     python -m sos_notebook.install;\
     git clone https://github.com/qMRLab/t1_book.git;  \
-    cd t1_book;\
+    cd t1_book/;\
     git checkout neurolibre;  \
+    cd content/; \
     git clone https://github.com/neuropoly/qMRLab.git; \
     cd qMRLab; \
     git checkout 0e97155a6e310911e575ebd8f8870e5f2988a82b; \
     cd ..; \
     mkdir qMRLab/data; \
     for i in _requirements/*_dataset.json; do repo2data -r "$i"; done; \
-    chmod -R 777 $HOME/work/t1_book; \
+    chmod -R 777 $HOME/work/t1_book/content/; \
     octave --eval "cd qMRLab; \
                       startup; \
                       pkg list;"
 
-WORKDIR $HOME/work/t1_book
+WORKDIR $HOME/work/t1_book/content
 
 USER $NB_UID
 
