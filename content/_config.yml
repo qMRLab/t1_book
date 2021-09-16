@@ -29,7 +29,6 @@ launch_buttons:
 
 repository:
   url                       : https://github.com/qMRLab/t1_book
-  path_to_book              : content/
   branch                    : neurolibre  
 
 
