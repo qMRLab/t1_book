@@ -2,7 +2,7 @@ FROM jupyter/base-notebook:8ccdfc1da8d5
 
 USER root
 
-RUN apt-get update &&     \
+RUN apt-get update &&      \
     apt-get install -y --no-install-recommends \
         build-essential=12.4ubuntu1 \
         emacs \
@@ -40,7 +40,7 @@ RUN apt-get update &&     \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN cd $HOME/work;  \
+RUN cd $HOME/work;   \
     pip install --upgrade pip --ignore-installed certifi;  \
     pip install --use-deprecated=legacy-resolver \
                 octave_kernel    \
