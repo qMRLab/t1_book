@@ -2,7 +2,7 @@ FROM jupyter/base-notebook:8ccdfc1da8d5
 
 USER root
 
-RUN apt-get update &&    \
+RUN apt-get update &&     \
     apt-get install -y --no-install-recommends \
         build-essential=12.4ubuntu1 \
         emacs \
@@ -64,7 +64,7 @@ RUN cd $HOME/work;  \
                 jupytext\
                 repo2data; \
     python -m sos_notebook.install;\
-    git clone https://github.com/qMRLab/t1_book.git; \
+    git clone https://github.com/qMRLab/t1_book.git;  \
     cd t1_book;\
     git checkout neurolibre;  \
     git clone https://github.com/neuropoly/qMRLab.git; \
