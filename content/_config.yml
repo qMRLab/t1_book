@@ -28,8 +28,8 @@ launch_buttons:
   thebe                     : true  
 
 repository:
-  url                       : https://github.com/zelenkastiot/t1_book_update
-  branch                    : main  
+  url                       : https://github.com/qMRLab/t1_book
+  branch                    : neurolibre  
 
 
 parse:
