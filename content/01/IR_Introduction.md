@@ -16,7 +16,8 @@ Figure 1. Pulse sequence of an inversion recovery experiment.
 
 <br>
 
-```{figure} images/ir_pulsesequences.png
+
+```{image} images/ir_pulsesequences.png
 ---
 width: 500px
 name: Fig1
