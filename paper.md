@@ -14,4 +14,5 @@ affiliations:
 - name: NeuroPoly, Polytechnique Montreal, Quebec, Canada
   index: 2
 date: 20 July 2021
+bibliography: paper.bib
 ---
