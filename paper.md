@@ -1,5 +1,5 @@
 ---
-title: 'Quantitative T1 Mapping'
+title: 'Quantitative T1 MRI'
 tags:
   - MRI
   - qMRI
