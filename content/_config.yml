@@ -6,7 +6,7 @@ logo                        : images/logo.png
 exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints"]
 
 execute:
-  execute_notebooks: 'off'
+  execute_notebooks: force
 
 only_build_toc_files: true 
 

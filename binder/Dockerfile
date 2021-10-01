@@ -62,10 +62,10 @@ RUN cd $HOME/work;        \
                 jupyterlab==2.2.0  \
                 jupyter-book==0.10.0\
                 jupytext\
-                repo2data; \
+                repo2data;  \
     python -m sos_notebook.install;\
     git clone https://github.com/qMRLab/t1_book.git;    \
-    cd t1_book/;\
+    cd t1_book/;\ 
     git checkout neurolibre;  \
     git clone https://github.com/neuropoly/qMRLab.git; \
     cd qMRLab; \
