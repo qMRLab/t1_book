@@ -64,7 +64,7 @@ RUN cd $HOME/work;        \
                 jupytext\
                 repo2data; \
     python -m sos_notebook.install;\
-    git clone https://github.com/qMRLab/t1_book.git;  \
+    git clone https://github.com/qMRLab/t1_book.git;   \
     cd t1_book/;\
     git checkout neurolibre;  \
     git clone https://github.com/neuropoly/qMRLab.git; \
