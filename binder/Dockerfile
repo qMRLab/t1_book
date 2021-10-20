@@ -58,7 +58,7 @@ RUN cd $HOME/work;        \
                 plotly \
                 flask \
                 ipywidgets \
-                nbconvert \
+                nbconvert >=6.0.1 \
                 jupyterlab  \
                 jupyter-book \
                 jupytext\
