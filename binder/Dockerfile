@@ -42,6 +42,7 @@ RUN apt-get update &&           \
 RUN cd $HOME/work;        \
     pip install --upgrade pip --ignore-installed certifi;  \
     pip install --use-deprecated=legacy-resolver \
+                jinja2~=2.11 \
                 octave_kernel    \
                 sos \
                 sos-notebook  \
@@ -57,7 +58,7 @@ RUN cd $HOME/work;        \
                 plotly \
                 flask \
                 ipywidgets \
-                nbconvert >=6.0.1 \
+                nbconvert \
                 jupyterlab  \
                 jupyter-book \
                 jupytext\
