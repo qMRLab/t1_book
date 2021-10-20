@@ -44,23 +44,23 @@ RUN cd $HOME/work;        \
     pip install --upgrade pip --ignore-installed certifi;  \
     pip install --use-deprecated=legacy-resolver \
                 octave_kernel    \
-                sos==0.17.7 \
-                sos-notebook==0.17.2 \
-                sos-python==0.9.12.1 \
-                sos-bash==0.12.3 \
-                sos-matlab==0.9.12.1 \
-                sos-ruby==0.9.15.0 \
-                sos-sas==0.9.12.3 \
-                sos-julia==0.9.12.1 \
-                sos-javascript==0.9.12.2 \
-                sos-r==0.9.12.2 \
+                sos \
+                sos-notebook \
+                sos-python \
+                sos-bash \
+                sos-matlab \
+                sos-ruby \
+                sos-sas \
+                sos-julia \
+                sos-javascript \
+                sos-r \
                 scipy \
-                plotly==3.10.0 \
+                plotly \
                 flask \
                 ipywidgets \
-                nbconvert==5.4.0 \
-                jupyterlab==2.2.0  \
-                jupyter-book==0.10.0\
+                nbconvert \
+                jupyterlab  \
+                jupyter-book \
                 jupytext\
                 repo2data;  \
     python -m sos_notebook.install;\
