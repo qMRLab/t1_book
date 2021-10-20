@@ -45,7 +45,7 @@ RUN cd $HOME/work;        \
     pip install --use-deprecated=legacy-resolver \
                 octave_kernel    \
                 sos \
-                sos-notebook \
+                sos-notebook  \
                 sos-python \
                 sos-bash \
                 sos-matlab \
