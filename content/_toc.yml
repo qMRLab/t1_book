@@ -1,22 +1,19 @@
-- file: intro
-  title: "Home"
-  
-- chapters:
-  - file: 01/IR_Introduction
-    title: "Inversion Recovery"
-    expand_sections: true
-    sections:
-    - file: 01/IR_SignalModelling
-    - file: 01/IR_DataFitting
-    - file: 01/IR_BenefitsAndPitfalls
-    - file: 01/IR_OtherMethods
-    - file: 01/IR_References 
-  - file: 02/VFA_Introduction
-    title: "Variable Flip Angle"
-    expand_sections: true
-    sections:
-    - file: 02/VFA_SignalModelling
-    - file: 02/VFA_DataFitting
-    - file: 02/VFA_BenefitsAndPitfalls
-    - file: 02/VFA_References
-  
+format: jb-book
+root: intro.md
+
+chapters:
+- file: 01/IR_Introduction
+  title: "Inversion Recovery"
+  sections:
+  - file: 01/IR_SignalModelling
+  - file: 01/IR_DataFitting
+  - file: 01/IR_BenefitsAndPitfalls
+  - file: 01/IR_OtherMethods
+  - file: 01/IR_References 
+- file: 02/VFA_Introduction
+  title: "Variable Flip Angle"
+  sections:
+  - file: 02/VFA_SignalModelling
+  - file: 02/VFA_DataFitting
+  - file: 02/VFA_BenefitsAndPitfalls
+  - file: 02/VFA_References

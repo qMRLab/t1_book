@@ -51,7 +51,7 @@ RUN cd $HOME/work;        \
                 sos-matlab \
                 sos-ruby \
                 sos-sas \
-                sos-julia \
+                sos-julia  \
                 sos-javascript \
                 sos-r \
                 scipy \
