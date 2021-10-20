@@ -62,7 +62,8 @@ RUN cd $HOME/work;        \
                 jupyterlab  \
                 jupyter-book \
                 jupytext\
-                repo2data;  \
+                matplotlib
+                chart_studio;  \
     python -m sos_notebook.install;\
     git clone https://github.com/qMRLab/t1_book.git;    \
     cd t1_book/;\ 
