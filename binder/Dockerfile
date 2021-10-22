@@ -65,7 +65,7 @@ RUN cd $HOME/work;        \
                 matplotlib \
                 chart_studio;  \
     python -m sos_notebook.install;\
-    git clone https://github.com/qMRLab/t1_book.git;    \
+    git clone https://github.com/qMRLab/t1_book.git;     \
     cd t1_book/;\ 
     git checkout neurolibre-unleashed;  \
     git clone https://github.com/neuropoly/qMRLab.git; \
