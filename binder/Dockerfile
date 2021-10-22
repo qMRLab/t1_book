@@ -25,7 +25,7 @@ RUN cd $HOME/work;        \
                 chart_studio;  \
     git clone https://github.com/qMRLab/t1_book.git;     \
     cd t1_book/;\ 
-    git checkout neurolibre-plots-only; \
+    git checkout neurolibre-celltags; \
     chmod -R 777 $HOME/work/t1_book/;
 
 WORKDIR $HOME/work/t1_book
