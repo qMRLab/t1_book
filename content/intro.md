@@ -1,8 +1,10 @@
 # Home
 
-This Jupyter Book is a series of interactive tutorials about quantitative T<sub>1</sub> mapping, powered by <a href="https://github.com/neuropoly/qMRLab" target="_blank">qMRLab</a>. Most figures are generated with <a href="https://plot.ly/python/" target="_blank">Plot.ly</a> – you can play with them by hovering your mouse over the data, zooming in (click and drag) and out (double click), moving the sliders, and changing the drop-down options. To view the code that was used to generate the figures in this blog post, hover your cursor in the top left corner of the frame that contains the tutorial and click the checkbox "All cells" in the popup that appears.
+```{note}
+Due to the limitation of NeuroLibre's servers and the software dependencies required to publish in NeuroLibre, this Jupyter Book does not contain the code needed to reproduce the figures. To see the full-featured Quantitative T1 MRI Jupyter Book where you can reproduce the figures on MyBinder.org's servers, please visit www.qmrlab.org/t1_book
+```
 
-Jupyter Lab notebooks of these tutorials are also available through Neurolibre's BinderHub, and inline code modification inside the Jupyter Book is provided by [executablebooks/thebe](https://github.com/executablebooks/thebe). For both options, you can modify the code, change the figures, and regenerate the html that was used to create the tutorial below. This Jupyter Book also uses a <a href="https://vatlab.github.io/sos-docs/" target="_blank">Script of Scripts (SoS)</a> kernel, allowing us to process the data using qMRLab in MATLAB/Octave and plot the figures with Plot.ly using Python, all within the same Jupyter Notebook.
+This Jupyter Book is a series of interactive tutorials about quantitative T<sub>1</sub> mapping, powered by <a href="https://github.com/neuropoly/qMRLab" target="_blank">qMRLab</a>. Most figures are generated with <a href="https://plot.ly/python/" target="_blank">Plot.ly</a> – you can play with them by hovering your mouse over the data, zooming in (click and drag) and out (double click), moving the sliders, and changing the drop-down options. 
 
 ## Acknowledgements
 

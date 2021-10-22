@@ -13,7 +13,7 @@ RUN apt-get update &&           \
 
 RUN cd $HOME/work;        \
     pip install --upgrade pip --ignore-installed certifi;  \
-    pip install jupyter-book \
+    pip install jupyter-book  \
                 scipy \
                 plotly \
                 flask \
