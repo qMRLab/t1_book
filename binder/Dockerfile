@@ -26,7 +26,8 @@ RUN cd $HOME/work;        \
     git clone https://github.com/qMRLab/t1_book.git;     \
     cd t1_book/;\ 
     git checkout neurolibre-plots-only; \
-    chmod -R 777 $HOME/work/t1_book/; 
+    chmod -R 777 $HOME/work/t1_book/; \
+    jupyter labextension install @jupyterlab/celltags;
 
 WORKDIR $HOME/work/t1_book
 
