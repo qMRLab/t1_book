@@ -13,20 +13,20 @@ RUN apt-get update &&           \
 
 RUN cd $HOME/work;        \
     pip install --upgrade pip --ignore-installed certifi;  \
-    pip install --use-deprecated=legacy-resolver \
+    pip install jupyter-book \
                 scipy \
                 plotly \
                 flask \
                 ipywidgets \
                 nbconvert \
                 jupyterlab  \
-                jupyter-book \
                 jupytext\
                 matplotlib \
                 chart_studio;  \
     git clone https://github.com/qMRLab/t1_book.git;     \
     cd t1_book/;\ 
-    git checkout neurolibre-plots-only;
+    git checkout neurolibre-plots-only; \
+    chmod -R 777 $HOME/work/t1_book/; 
 
 WORKDIR $HOME/work/t1_book
 
