@@ -5,37 +5,7 @@ USER root
 RUN apt-get update &&           \
     apt-get install -y --no-install-recommends \
         build-essential\
-        emacs \
-        git \
-        inkscape \
-        jed \
-        libsm6 \
-        libxext-dev \
-        libxrender1 \
-        lmodern \
-        netcat \
-        unzip \
-        nano \
-        curl \
-        wget \
-        gfortran \
-        cmake \
-        rsync \
-        imagemagick \
-        gnuplot-x11 \
-        libopenblas-base \
-        octave \
-        liboctave-dev  \
-        octave-dataframe \
-        octave-info \
-        octave-parallel \
-        octave-struct \
-        octave-io \
-        octave-statistics \
-        octave-optim \
-        octave-image \
-        python3-dev \
-        ttf-dejavu && \
+        python3-dev &&\
     apt-get clean && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -43,18 +13,6 @@ RUN apt-get update &&           \
 RUN cd $HOME/work;        \
     pip install --upgrade pip --ignore-installed certifi;  \
     pip install --use-deprecated=legacy-resolver \
-                jinja2~=2.11 \
-                octave_kernel    \
-                sos \
-                sos-notebook  \
-                sos-python \
-                sos-bash \
-                sos-matlab \
-                sos-ruby \
-                sos-sas \
-                sos-julia  \
-                sos-javascript \
-                sos-r \
                 scipy \
                 plotly \
                 flask \
@@ -65,19 +23,9 @@ RUN cd $HOME/work;        \
                 jupytext\
                 matplotlib \
                 chart_studio;  \
-    python -m sos_notebook.install;\
     git clone https://github.com/qMRLab/t1_book.git;     \
     cd t1_book/;\ 
-    git checkout neurolibre-unleashed;  \
-    git clone https://github.com/neuropoly/qMRLab.git; \
-    cd qMRLab; \
-    git checkout 0e97155a6e310911e575ebd8f8870e5f2988a82b;  \
-    cd ..; \
-    mkdir qMRLab/data; \
-    chmod -R 777 $HOME/work/t1_book/; \
-    octave --eval "cd qMRLab; \
-                      startup; \
-                      pkg list;"
+    git checkout neurolibre-plots-only;
 
 WORKDIR $HOME/work/t1_book
 
