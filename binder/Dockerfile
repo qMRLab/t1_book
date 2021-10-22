@@ -26,6 +26,7 @@ RUN apt-get update &&           \
         libopenblas-base \
         octave \
         liboctave-dev  \
+        octave-dataframe \
         octave-info \
         octave-parallel \
         octave-struct \
