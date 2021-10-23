@@ -2,7 +2,7 @@ FROM jupyter/base-notebook:latest
 
 USER root
 
-RUN apt-get update &&           \
+RUN apt-get update &&            \
     apt-get install -y --no-install-recommends \
         build-essential\
         git \
@@ -11,7 +11,7 @@ RUN apt-get update &&           \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN cd $HOME/work;        \
+RUN cd $HOME/work;         \
     pip install --upgrade pip --ignore-installed certifi;  \
     pip install jupyter-book  \
                 scipy \
